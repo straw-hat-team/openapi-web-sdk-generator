@@ -1,0 +1,30 @@
+import {
+  HttpClient,
+  createUrlPath,
+  getResponseBody,
+  getRequestBody,
+  RequestOptions,
+} from '<%= importsPath %>/http-client';
+
+export interface Params {
+  path?: Record<any, any>;
+  query?: Record<any, any>;
+  body?: Record<any, any>;
+  options?: RequestOptions;
+}
+
+export function <%= functionName %>UrlPath(params: Params) {
+  return createUrlPath('<%= path %>', params);
+}
+
+export async function <%= functionName %>(client: HttpClient, params?: Params): Promise<any> {
+  const url = <%= functionName %>UrlPath(params);
+
+  const response = await client(url, {
+    method: '<%= method %>',
+    body: getRequestBody(params.body),
+    signal: params?.options?.signal,
+  });
+
+  return getResponseBody(response);
+}
