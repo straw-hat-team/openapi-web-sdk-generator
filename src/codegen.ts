@@ -1,7 +1,15 @@
 import type { OpenAPIV3 } from 'openapi-types';
 import * as jetpack from 'fs-jetpack';
-import { OutDir } from './directories';
+import { OutputDir } from './output-dir';
 import { PathItem, PathItemObject } from './path-item';
+
+export function readConfig(filePath: string): OpenAPIV3.Document {
+  if (!jetpack.exists(filePath)) {
+    throw new Error(`${filePath} OpenAPI file does not exists.`);
+  }
+  const fileData = jetpack.read(filePath) ?? '';
+  return JSON.parse(fileData);
+}
 
 export interface CodegenConfig {
   config: OpenAPIV3.Document;
@@ -12,7 +20,7 @@ export interface CodegenConfig {
 }
 
 export class Codegen {
-  private outputDir: OutDir;
+  private outputDir: OutputDir;
   private paths: {
     outputDir: string;
     httpClient: string;
@@ -22,12 +30,7 @@ export class Codegen {
   constructor(args: CodegenConfig) {
     this.config = args.config;
     this.paths = args.paths;
-    this.outputDir = new OutDir(args.paths.outputDir);
-  }
-
-  static readConfig(filePath: string): OpenAPIV3.Document {
-    const fileData = jetpack.read(filePath);
-    return JSON.parse(fileData.toString());
+    this.outputDir = new OutputDir(args.paths.outputDir);
   }
 
   generate() {

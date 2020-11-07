@@ -1,9 +1,14 @@
 import path from 'path';
 import type { OpenAPIV3 } from 'openapi-types';
-import { OutDir, TemplateDir } from './directories';
+import { OutputDir } from './output-dir';
+import { TemplateDir } from './template-dir';
 import { createDebugger } from './debug';
 import camelCase from 'camelcase';
 import * as prettier from './prettier';
+
+export function isOperationTuple(tuple: [string, unknown]) {
+  return ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(tuple[0]);
+}
 
 export interface OperationInfoObject extends OpenAPIV3.OperationObject {
   'x-directories'?: string[];
@@ -30,8 +35,10 @@ export class Operation {
   private operationPath: string;
   private operationMethod: string;
   private config: OperationInfoObject;
+  // @ts-ignore
   private document: OpenAPIV3.Document;
-  private outputDir: OutDir;
+  private outputDir: OutputDir;
+  // @ts-ignore
   private extraParameters: Array<OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject>;
   private extraDirectories: string[];
   private paths: {
@@ -45,7 +52,7 @@ export class Operation {
     this.operationMethod = args.operationMethod;
     this.config = args.config;
     this.document = args.document;
-    this.outputDir = new OutDir(args.paths.outputDir);
+    this.outputDir = new OutputDir(args.paths.outputDir);
     this.extraParameters = args.extraParameters ?? [];
     this.extraDirectories = args.extraDirectories ?? [];
     this.paths = args.paths;
@@ -57,7 +64,7 @@ export class Operation {
     this.addOperation();
   }
 
-  async addOperation() {
+  private async addOperation() {
     const sourceCode = this.templateDir.render('operation.ts.ejs', {
       functionName: this.operationName,
       importsPath: this.operationImportsPath,
@@ -71,37 +78,37 @@ export class Operation {
     this.outputDir.appendFileSync(this.operationFilePath, formatted);
   }
 
-  createOperationDir() {
+  private createOperationDir() {
     this.outputDir.createDir(this.directoryPath);
   }
 
-  get operationName() {
+  private get operationName() {
+    if (!this.config.operationId) {
+      throw new Error(`Operation Id is missing for "${this.operationMethod} ${this.operationPath} "`);
+    }
+
     return camelCase(this.config.operationId);
   }
 
-  get directoryPath() {
+  private get directoryPath() {
     const directories = this.config['x-directories'] ?? [];
     const normalizedDirNames = this.extraDirectories.concat(directories).map(this.normalizeDirName);
 
     return path.join(...normalizedDirNames);
   }
 
-  normalizeDirName(dirName: string) {
+  private normalizeDirName(dirName: string) {
     return dirName.toLowerCase();
   }
 
-  get operationFilePath() {
+  private get operationFilePath() {
     return path.join(this.directoryPath, `${this.operationName}.ts`);
   }
 
-  get operationImportsPath() {
+  private get operationImportsPath() {
     const operationsFilePath = this.outputDir.resolve(this.operationFilePath);
     const operationsFileDir = path.dirname(operationsFilePath);
     const httpClientDir = path.dirname(this.paths.httpClient);
     return path.relative(operationsFileDir, httpClientDir);
-  }
-
-  static isOperationTuple(tuple: [string, unknown]) {
-    return ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(tuple[0]);
   }
 }

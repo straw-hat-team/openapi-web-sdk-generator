@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from 'openapi-types';
-import { Operation, OperationInfoObject } from './operation';
+import { Operation, OperationInfoObject, isOperationTuple } from './operation';
 
 export interface PathItemObject extends OpenAPIV3.PathItemObject {
   'x-directories'?: string[];
@@ -33,15 +33,12 @@ export class PathItem {
 
   generate() {
     return Object.entries(this.config)
-      .filter(Operation.isOperationTuple)
+      .filter(isOperationTuple)
       .map(this.createOperationFromTuple)
       .map((operationItem) => operationItem.generate());
   }
 
-  private createOperationFromTuple = ([operationMethod, config]: [
-    string,
-    OpenAPIV3.OperationObject
-  ]) => {
+  private createOperationFromTuple = ([operationMethod, config]: [string, OpenAPIV3.OperationObject]) => {
     return new Operation({
       operationPath: this.operationPath,
       operationMethod,
