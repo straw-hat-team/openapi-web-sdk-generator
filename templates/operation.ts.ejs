@@ -13,7 +13,7 @@ export interface Params {
   options?: RequestOptions;
 }
 
-export function <%= functionName %>UrlPath(params: Params) {
+export function <%= functionName %>UrlPath(params?: Params) {
   return createUrlPath('<%= path %>', params);
 }
 
