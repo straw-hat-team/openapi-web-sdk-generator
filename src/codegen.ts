@@ -4,9 +4,16 @@ import { OutputDir } from './output-dir';
 import { PathItem, PathItemObject } from './path-item';
 
 export function readConfig(filePath: string): OpenAPIV3.Document {
-  if (!jetpack.exists(filePath)) {
+  const fileType = jetpack.exists(filePath);
+
+  if (!fileType) {
     throw new Error(`${filePath} OpenAPI file does not exists.`);
   }
+
+  if (fileType !== 'file') {
+    throw new Error(`${filePath} is not a file.`);
+  }
+
   const fileData = jetpack.read(filePath) ?? '';
   return JSON.parse(fileData);
 }
