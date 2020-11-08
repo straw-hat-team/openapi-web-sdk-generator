@@ -1,9 +1,9 @@
 import path from 'path';
 import type { OpenAPIV3 } from 'openapi-types';
+import { camelCase, pascalCase } from 'change-case';
 import { OutputDir } from './output-dir';
 import { TemplateDir } from './template-dir';
 import { createDebugger } from './debug';
-import camelCase from 'camelcase';
 import * as prettier from './prettier';
 
 export function isOperationTuple(tuple: [string, unknown]) {
@@ -67,6 +67,7 @@ export class Operation {
   private async addOperation() {
     const sourceCode = this.templateDir.render('operation.ts.ejs', {
       functionName: this.operationName,
+      typePrefix: pascalCase(this.operationName),
       httpClientPath: this.httpClientPath,
       operationMethod: this.operationMethod.toUpperCase(),
       operationPath: this.operationPath,
