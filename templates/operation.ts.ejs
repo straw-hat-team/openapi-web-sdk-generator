@@ -4,7 +4,7 @@ import {
   getResponseBody,
   getRequestBody,
   RequestOptions,
-} from '<%= importsPath %>/http-client';
+} from '<%= httpClientPath %>/http-client';
 
 export interface Params {
   path?: Record<any, any>;
@@ -14,14 +14,14 @@ export interface Params {
 }
 
 export function <%= functionName %>UrlPath(params?: Params) {
-  return createUrlPath('<%= path %>', params);
+  return createUrlPath('<%= operationPath %>', params);
 }
 
 export async function <%= functionName %>(client: HttpClient, params?: Params): Promise<any> {
   const url = <%= functionName %>UrlPath(params);
 
   const response = await client(url, {
-    method: '<%= method %>',
+    method: '<%= operationMethod %>',
     body: getRequestBody(params?.body),
     signal: params?.options?.signal,
   });

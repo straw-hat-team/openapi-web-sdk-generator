@@ -67,9 +67,9 @@ export class Operation {
   private async addOperation() {
     const sourceCode = this.templateDir.render('operation.ts.ejs', {
       functionName: this.operationName,
-      importsPath: this.operationImportsPath,
-      method: this.operationMethod.toUpperCase(),
-      path: this.operationPath,
+      httpClientPath: this.httpClientPath,
+      operationMethod: this.operationMethod.toUpperCase(),
+      operationPath: this.operationPath,
     });
 
     this.debug('Formatting operation');
@@ -105,7 +105,7 @@ export class Operation {
     return path.join(this.directoryPath, `${this.operationName}.ts`);
   }
 
-  private get operationImportsPath() {
+  private get httpClientPath() {
     const operationsFilePath = this.outputDir.resolve(this.operationFilePath);
     const operationsFileDir = path.dirname(operationsFilePath);
     const httpClientDir = path.dirname(this.paths.httpClient);
