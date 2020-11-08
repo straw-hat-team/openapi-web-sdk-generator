@@ -1,20 +1,18 @@
 import type { OpenAPIV3 } from 'openapi-types';
-import * as jetpack from 'fs-jetpack';
+import * as fs from 'fs';
 import { OutputDir } from './output-dir';
 import { PathItem, PathItemObject } from './path-item';
 
 export function readConfig(filePath: string): OpenAPIV3.Document {
-  const fileType = jetpack.exists(filePath);
-
-  if (!fileType) {
+  if (!fs.existsSync(filePath)) {
     throw new Error(`${filePath} OpenAPI file does not exists.`);
   }
 
-  if (fileType !== 'file') {
+  if (!fs.statSync(filePath).isFile()) {
     throw new Error(`${filePath} is not a file.`);
   }
 
-  const fileData = jetpack.read(filePath) ?? '';
+  const fileData = fs.readFileSync(filePath).toString();
   return JSON.parse(fileData);
 }
 

@@ -8,7 +8,7 @@ export class TemplateDir extends Dir {
   protected debug = createDebugger('template-dir');
   private templates = new FancyMap<string, string>();
 
-  render(relativePath: string, data = {}) {
+  render(relativePath: string, data: Record<any, any> = {}) {
     const templatePath = this.resolve(relativePath);
     const templateContent = this.templates.getOrSet(templatePath, () => {
       this.debug(`Reading template ${templatePath}`);
