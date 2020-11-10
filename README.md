@@ -46,7 +46,6 @@ USAGE
 
 OPTIONS
   --config=config                  (required) OpenAPI V3 configuration file.
-  --httpClientFile=httpClientFile  (required) The HTTP client file path.
   --output=output                  (required) Output directory path of the codegen.
 ```
 

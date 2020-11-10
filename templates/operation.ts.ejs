@@ -17,7 +17,7 @@ export function <%= functionName %>UrlPath(params?: <%= typePrefix %>Params) {
   return createUrlPath('<%= operationPath %>', params);
 }
 
-export async function <%= functionName %>(client: Fetcher<any>, params?: <%= typePrefix %>Params): Promise<any> {
+export async function <%= functionName %>(client: Fetcher, params?: <%= typePrefix %>Params): Promise<any> {
   const url = <%= functionName %>UrlPath(params);
 
   const response = await client(url, {

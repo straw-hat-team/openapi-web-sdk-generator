@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from 'openapi-types';
-import { Operation, OperationInfoObject, isOperationTuple } from './operation';
+import { Operation, OperationInfoObject, isOperationTuple, PathsConfig } from './operation';
 
 export interface PathItemObject extends OpenAPIV3.PathItemObject {
   'x-directories'?: string[];
@@ -9,20 +9,14 @@ export interface PathItemArgs {
   operationPath: string;
   document: OpenAPIV3.Document;
   config: PathItemObject;
-  paths: {
-    outputDir: string;
-    httpClient: string;
-  };
+  paths: PathsConfig;
 }
 
 export class PathItem {
   private operationPath: string;
   private config: PathItemObject;
   private document: OpenAPIV3.Document;
-  private paths: {
-    outputDir: string;
-    httpClient: string;
-  };
+  private paths: PathsConfig;
 
   constructor(args: PathItemArgs) {
     this.operationPath = args.operationPath;

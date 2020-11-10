@@ -14,10 +14,6 @@ export default class LocalCommand extends Command {
       required: true,
       description: 'Output directory path of the codegen.',
     }),
-    httpClientFile: flags.string({
-      required: true,
-      description: 'The HTTP client file path.',
-    }),
   };
 
   async run() {
@@ -27,7 +23,6 @@ export default class LocalCommand extends Command {
       config: readConfig(flags.config),
       paths: {
         outputDir: path.resolve(flags.output),
-        httpClient: path.resolve(flags.httpClientFile),
       },
     }).generate();
   }

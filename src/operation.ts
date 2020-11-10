@@ -14,6 +14,10 @@ export interface OperationInfoObject extends OpenAPIV3.OperationObject {
   'x-directories'?: string[];
 }
 
+export type PathsConfig = {
+  outputDir: string;
+};
+
 export interface OperationArgs {
   operationPath: string;
   operationMethod: string;
@@ -24,10 +28,7 @@ export interface OperationArgs {
   extraServers?: OpenAPIV3.ServerObject[];
   extraParameters?: Array<OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject>;
   extraDirectories?: string[];
-  paths: {
-    outputDir: string;
-    httpClient: string;
-  };
+  paths: PathsConfig;
 }
 
 export class Operation {
@@ -41,10 +42,8 @@ export class Operation {
   // @ts-ignore
   private extraParameters: Array<OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject>;
   private extraDirectories: string[];
-  private paths: {
-    outputDir: string;
-    httpClient: string;
-  };
+  // @ts-ignore
+  private paths: PathsConfig;
   private templateDir: TemplateDir;
 
   constructor(args: OperationArgs) {
@@ -68,7 +67,6 @@ export class Operation {
     const sourceCode = this.templateDir.render('operation.ts.ejs', {
       functionName: this.operationName,
       typePrefix: pascalCase(this.operationName),
-      httpClientPath: this.httpClientPath,
       operationMethod: this.operationMethod.toUpperCase(),
       operationPath: this.operationPath,
     });
@@ -104,12 +102,5 @@ export class Operation {
 
   private get operationFilePath() {
     return path.join(this.directoryPath, `${this.operationName}.ts`);
-  }
-
-  private get httpClientPath() {
-    const operationsFilePath = this.outputDir.resolve(this.operationFilePath);
-    const operationsFileDir = path.dirname(operationsFilePath);
-    const httpClientDir = path.dirname(this.paths.httpClient);
-    return path.relative(operationsFileDir, httpClientDir);
   }
 }

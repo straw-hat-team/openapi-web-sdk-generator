@@ -2,6 +2,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import * as fs from 'fs';
 import { OutputDir } from './output-dir';
 import { PathItem, PathItemObject } from './path-item';
+import { PathsConfig } from './operation';
 
 export function readConfig(filePath: string): OpenAPIV3.Document {
   if (!fs.existsSync(filePath)) {
@@ -18,18 +19,12 @@ export function readConfig(filePath: string): OpenAPIV3.Document {
 
 export interface CodegenConfig {
   config: OpenAPIV3.Document;
-  paths: {
-    outputDir: string;
-    httpClient: string;
-  };
+  paths: PathsConfig;
 }
 
 export class Codegen {
   private outputDir: OutputDir;
-  private paths: {
-    outputDir: string;
-    httpClient: string;
-  };
+  private paths: PathsConfig;
   private config: OpenAPIV3.Document;
 
   constructor(args: CodegenConfig) {
