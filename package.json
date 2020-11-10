@@ -1,6 +1,6 @@
 {
   "name": "@straw-hat/openapi-web-sdk-generator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Web SDK Generator using OpenAPI v3.",
   "repository": {
     "type": "git",
@@ -34,6 +34,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
+    "bin",
     "dist",
     "README.md",
     "templates",
