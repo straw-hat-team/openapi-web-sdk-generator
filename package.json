@@ -1,6 +1,6 @@
 {
   "name": "@straw-hat/openapi-web-sdk-generator",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A Web SDK Generator using OpenAPI v3.",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "oclif:readme": "oclif-dev readme"
   },
   "bin": {
-    "openapi-web-sdk-generator": "bin/openapi-web-sdk-generator"
+    "sht-openapi-web-sdk-generator": "bin/sht-openapi-web-sdk-generator"
   },
   "type": "commonjs",
   "main": "dist/index.js",
@@ -66,7 +66,7 @@
   },
   "oclif": {
     "commands": "./dist/commands",
-    "bin": "openapi-web-sdk-generator",
+    "bin": "sht-openapi-web-sdk-generator",
     "plugins": [
       "@oclif/plugin-help"
     ]

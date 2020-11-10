@@ -4,28 +4,28 @@
 <!-- usage -->
 ```sh-session
 $ npm install -g @straw-hat/openapi-web-sdk-generator
-$ openapi-web-sdk-generator COMMAND
+$ sht-openapi-web-sdk-generator COMMAND
 running command...
-$ openapi-web-sdk-generator (-v|--version|version)
+$ sht-openapi-web-sdk-generator (-v|--version|version)
 @straw-hat/openapi-web-sdk-generator/0.1.1 darwin-x64 node-v15.1.0
-$ openapi-web-sdk-generator --help [COMMAND]
+$ sht-openapi-web-sdk-generator --help [COMMAND]
 USAGE
-  $ openapi-web-sdk-generator COMMAND
+  $ sht-openapi-web-sdk-generator COMMAND
 ...
 ```
 <!-- usagestop -->
 
 <!-- commands -->
-* [`openapi-web-sdk-generator help [COMMAND]`](#openapi-web-sdk-generator-help-command)
-* [`openapi-web-sdk-generator local`](#openapi-web-sdk-generator-local)
+* [`sht-openapi-web-sdk-generator help [COMMAND]`](#sht-openapi-web-sdk-generator-help-command)
+* [`sht-openapi-web-sdk-generator local`](#sht-openapi-web-sdk-generator-local)
 
-## `openapi-web-sdk-generator help [COMMAND]`
+## `sht-openapi-web-sdk-generator help [COMMAND]`
 
-display help for openapi-web-sdk-generator
+display help for sht-openapi-web-sdk-generator
 
 ```
 USAGE
-  $ openapi-web-sdk-generator help [COMMAND]
+  $ sht-openapi-web-sdk-generator help [COMMAND]
 
 ARGUMENTS
   COMMAND  command to show help for
@@ -36,13 +36,13 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
 
-## `openapi-web-sdk-generator local`
+## `sht-openapi-web-sdk-generator local`
 
 Generate the code from a local OpenAPI V3 file.
 
 ```
 USAGE
-  $ openapi-web-sdk-generator local
+  $ sht-openapi-web-sdk-generator local
 
 OPTIONS
   --config=config  (required) OpenAPI V3 configuration file.
