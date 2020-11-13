@@ -7,7 +7,7 @@ $ npm install -g @straw-hat/openapi-web-sdk-generator
 $ sht-openapi-web-sdk-generator COMMAND
 running command...
 $ sht-openapi-web-sdk-generator (-v|--version|version)
-@straw-hat/openapi-web-sdk-generator/0.2.0 darwin-x64 node-v15.1.0
+@straw-hat/openapi-web-sdk-generator/0.3.0 darwin-x64 node-v15.1.0
 $ sht-openapi-web-sdk-generator --help [COMMAND]
 USAGE
   $ sht-openapi-web-sdk-generator COMMAND
@@ -49,5 +49,5 @@ OPTIONS
   --output=output  (required) Output directory path of the codegen.
 ```
 
-_See code: [dist/commands/local.ts](https://github.com/straw-hat-team/openapi-web-sdk-generator/blob/v0.2.0/dist/commands/local.ts)_
+_See code: [dist/commands/local.ts](https://github.com/straw-hat-team/openapi-web-sdk-generator/blob/v0.3.0/dist/commands/local.ts)_
 <!-- commandsstop -->
