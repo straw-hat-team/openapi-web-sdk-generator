@@ -1,6 +1,6 @@
 import path from 'path';
 import type { OpenAPIV3 } from 'openapi-types';
-import { camelCase, pascalCase } from 'change-case';
+import { camelCase, paramCase, pascalCase } from 'change-case';
 import { OutputDir } from './output-dir';
 import { TemplateDir } from './template-dir';
 import { createDebugger } from './debug';
@@ -65,7 +65,7 @@ export class Operation {
 
   private async addOperation() {
     const sourceCode = this.templateDir.render('operation.ts.ejs', {
-      functionName: this.operationName,
+      functionName: camelCase(this.operationName),
       typePrefix: pascalCase(this.operationName),
       operationMethod: this.operationMethod.toUpperCase(),
       operationPath: this.operationPath,
@@ -86,7 +86,7 @@ export class Operation {
       throw new Error(`Operation Id is missing for "${this.operationMethod} ${this.operationPath} "`);
     }
 
-    return camelCase(this.config.operationId);
+    return this.config.operationId;
   }
 
   private get directoryPath() {
@@ -97,10 +97,10 @@ export class Operation {
   }
 
   private normalizeDirName(dirName: string) {
-    return dirName.toLowerCase();
+    return paramCase(dirName.toLowerCase());
   }
 
   private get operationFilePath() {
-    return path.join(this.directoryPath, `${this.operationName}.ts`);
+    return path.join(this.directoryPath, `${paramCase(this.operationName)}.ts`);
   }
 }
