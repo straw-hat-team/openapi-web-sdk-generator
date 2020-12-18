@@ -38,7 +38,11 @@ export class Codegen {
 
     return Object.entries<OpenAPIV3.PathItemObject>(this.config.paths)
       .map(this.createPathItemFromTuple)
-      .map((pathItem) => pathItem.generate());
+      .map(this.generatePathItem);
+  }
+
+  private generatePathItem(pathItem: PathItem) {
+    return pathItem.generate();
   }
 
   private createPathItemFromTuple = ([operationPath, config]: [string, PathItemObject]) => {

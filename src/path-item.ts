@@ -29,7 +29,11 @@ export class PathItem {
     return Object.entries(this.config)
       .filter(isOperationTuple)
       .map(this.createOperationFromTuple)
-      .map((operationItem) => operationItem.generate());
+      .map(this.generateOperation);
+  }
+
+  private generateOperation(operationItem: Operation) {
+    return operationItem.generate();
   }
 
   private createOperationFromTuple = ([operationMethod, config]: [string, OpenAPIV3.OperationObject]) => {
