@@ -18,17 +18,17 @@ export function readConfig(filePath: string): OpenAPIV3.Document {
 }
 
 export interface CodegenConfig {
-  config: OpenAPIV3.Document;
+  document: OpenAPIV3.Document;
   paths: PathsConfig;
 }
 
 export class Codegen {
   private outputDir: OutputDir;
   private paths: PathsConfig;
-  private config: OpenAPIV3.Document;
+  private document: OpenAPIV3.Document;
 
   constructor(args: CodegenConfig) {
-    this.config = args.config;
+    this.document = args.document;
     this.paths = args.paths;
     this.outputDir = new OutputDir(args.paths.outputDir);
   }
@@ -36,7 +36,7 @@ export class Codegen {
   generate() {
     this.outputDir.resetDir();
 
-    return Object.entries<OpenAPIV3.PathItemObject>(this.config.paths)
+    return Object.entries<OpenAPIV3.PathItemObject>(this.document.paths)
       .map(this.createPathItemFromTuple)
       .map(this.generatePathItem);
   }
@@ -49,7 +49,7 @@ export class Codegen {
     return new PathItem({
       operationPath,
       config,
-      document: this.config,
+      document: this.document,
       paths: this.paths,
     });
   };

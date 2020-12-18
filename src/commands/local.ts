@@ -20,7 +20,7 @@ export default class LocalCommand extends Command {
     const { flags } = this.parse(LocalCommand);
 
     new Codegen({
-      config: readConfig(flags.config),
+      document: readConfig(flags.config),
       paths: {
         outputDir: path.resolve(flags.output),
       },
