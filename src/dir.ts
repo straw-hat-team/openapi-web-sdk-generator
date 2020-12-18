@@ -13,20 +13,24 @@ export class Dir {
   }
 
   resetDir() {
-    this.ensureDir();
-    this.emptyDir();
+    this.createDirSync('.');
+    this.emptyDirSync('.');
   }
 
-  emptyDir() {
-    return del.sync(`${this.path}/**/*`);
-  }
-
-  ensureDir() {
-    return makeDir(this.path);
+  emptyDirSync(...pathsSegments: string[]) {
+    const dirPath = this.resolve(...pathsSegments);
+    this.debug(`Removing directory content of ${dirPath}`);
+    return del.sync(`${dirPath}/**`);
   }
 
   resolve(...pathsSegments: string[]) {
     return path.resolve(this.path, ...pathsSegments);
+  }
+
+  createDirSync(...pathsSegments: string[]) {
+    const dirPath = this.resolve(...pathsSegments);
+    this.debug(`Creating directory ${dirPath}`);
+    return makeDir.sync(dirPath);
   }
 
   writeFileSync(relativePath: string, data: any) {

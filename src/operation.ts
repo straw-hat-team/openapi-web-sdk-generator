@@ -78,7 +78,7 @@ export class Operation {
   }
 
   private createOperationDir() {
-    this.outputDir.createDir(this.directoryPath);
+    this.outputDir.createDirSync(this.directoryPath);
   }
 
   private get operationName() {
