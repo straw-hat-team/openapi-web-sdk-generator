@@ -4,7 +4,7 @@ import { OutputDir } from './output-dir';
 import { PathItem, PathItemObject } from './path-item';
 import { PathsConfig } from './operation';
 
-export function readConfig(filePath: string): OpenAPIV3.Document {
+export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
   if (!fs.existsSync(filePath)) {
     throw new Error(`${filePath} OpenAPI file does not exists.`);
   }

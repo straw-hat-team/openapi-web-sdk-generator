@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Command, flags } from '@oclif/command';
-import { Codegen, readConfig } from '../codegen';
+import { Codegen, readOpenApiFile } from '../codegen';
 
 export default class LocalCommand extends Command {
   static description = 'Generate the code from a local OpenAPI V3 file.';
@@ -20,7 +20,7 @@ export default class LocalCommand extends Command {
     const { flags } = this.parse(LocalCommand);
 
     new Codegen({
-      document: readConfig(flags.config),
+      document: readOpenApiFile(flags.config),
       paths: {
         outputDir: path.resolve(flags.output),
       },
