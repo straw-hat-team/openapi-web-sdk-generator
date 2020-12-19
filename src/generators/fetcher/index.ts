@@ -22,7 +22,7 @@ export class FetcherCodegen extends CodegenBase {
     pathItem: PathItemObject;
     operation: OperationObject;
   }) {
-    const indexFilePath = path.join(this.dirPath, 'index.ts');
+    const indexFilePath = path.join(this.dirPath, 'index');
     const operationDirPath = path.join(this.dirPath, getOperationDirectory(args.pathItem, args.operation));
     const operationFilePath = getOperationFilePath(operationDirPath, args.operation);
     const operationExportPath = path.relative(this.dirPath, operationFilePath);
@@ -35,7 +35,7 @@ export class FetcherCodegen extends CodegenBase {
     );
 
     this.toolkit.outputDir.appendFileSync(
-      indexFilePath,
+      `${indexFilePath}.ts`,
       renderOperationExportStatement({ operationExportPath: operationExportPath })
     );
   }
