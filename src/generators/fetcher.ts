@@ -7,14 +7,14 @@ import { IToolkit, OperationObject, PathItemObject } from '../types';
 
 const templateDir = new TemplateDir(path.join(__dirname, '..', '..', 'templates', 'generators', 'fetcher'));
 
-export interface FetcherCodegenArgs {
+export interface FetcherCodegenConfig {
   dirPath?: string;
 }
 
 export class FetcherCodegen extends CodegenBase {
   private dirPath: string;
 
-  constructor(toolkit: IToolkit, args?: FetcherCodegenArgs) {
+  constructor(toolkit: IToolkit, args?: FetcherCodegenConfig) {
     super(toolkit);
     this.dirPath = args?.dirPath ?? '.';
   }

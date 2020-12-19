@@ -1,0 +1,19 @@
+import { useFetcherMutation, UseFetcherMutationArgs } from '@straw-hat/react-query-fetcher';
+import { Fetcher } from '@straw-hat/fetcher';
+import { <%= functionName %> } from '<%= importPath %>';
+
+export type Use<%= pascalFunctionName %> = UseFetcherMutationArgs<
+  any,
+  any,
+  any
+>;
+
+export function use<%= pascalFunctionName %>(
+  client: Fetcher,
+  args: Omit<Use<%= pascalFunctionName %>, 'endpoint'>
+) {
+  return useFetcherMutation(client, {
+    ...args,
+    endpoint: <%= functionName %>,
+  });
+}

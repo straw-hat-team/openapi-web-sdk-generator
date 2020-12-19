@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import { loadConfig } from './helpers';
 import { OpenApiWebSdkGenerator } from './open-api-web-sdk-generator';
-import { FetcherCodegen } from './genetators/fetcher';
+import { FetcherCodegen } from './generators/fetcher';
 
 export type ConfigFactory = (api: OpenApiWebSdkGenerator) => void;
 
