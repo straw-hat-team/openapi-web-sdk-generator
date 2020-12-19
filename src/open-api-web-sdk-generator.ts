@@ -32,7 +32,7 @@ export class OpenApiWebSdkGenerator {
     return prettier.format(sourceCode);
   }
 
-  generate() {
+  async generate() {
     this.outputDir.resetDir();
 
     for (const [operationPath, pathItem] of Object.entries<PathItemObject>(this.document.paths)) {

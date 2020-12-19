@@ -30,6 +30,6 @@ export default class LocalCommand extends BaseCommand {
 
     this.configFactory(generator);
 
-    generator.generate();
+    await generator.generate();
   }
 }
