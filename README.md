@@ -51,3 +51,7 @@ OPTIONS
 
 _See code: [dist/commands/local.ts](https://github.com/straw-hat-team/openapi-web-sdk-generator/blob/v0.3.0/dist/commands/local.ts)_
 <!-- commandsstop -->
+
+## What's next?
+
+- [Custom generators](./docs/custom-generators.md)

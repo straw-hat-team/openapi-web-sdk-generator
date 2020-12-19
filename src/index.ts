@@ -1,1 +1,1 @@
-export * from './codegen';
+export * from './open-api-web-sdk-generator';
