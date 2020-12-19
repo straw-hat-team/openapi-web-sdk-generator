@@ -1,5 +1,4 @@
 import { camelCase, pascalCase } from 'change-case';
-import * as prettier from '../prettier';
 import { getOperationDirectory, getOperationFileName } from '../helpers';
 import { TemplateDir } from '../template-dir';
 import * as path from 'path';
@@ -38,7 +37,7 @@ export class FetcherCodegen extends CodegenBase {
       operationPath: args.operationPath,
     });
 
-    const formattedSourceCode = prettier.format(sourceCode);
+    const formattedSourceCode = this.toolkit.formatCode(sourceCode);
 
     this.toolkit.outputDir.writeFileSync(operationFilePath, formattedSourceCode);
   }

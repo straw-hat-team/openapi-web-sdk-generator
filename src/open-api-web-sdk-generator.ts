@@ -3,6 +3,7 @@ import { OutputDir } from './output-dir';
 import { OperationObject, PathItemObject } from './types';
 import { hasOperationId, isOperationKey } from './helpers';
 import { CodegenBase } from './codegen-base';
+import * as prettier from './prettier';
 
 export interface OpenApiWebSdkGeneratorArgs {
   document: OpenAPIV3.Document;
@@ -25,6 +26,10 @@ export class OpenApiWebSdkGenerator {
   addGenerator(generator: CodegenBase) {
     this.generators.add(generator);
     return this;
+  }
+
+  formatter(sourceCode: string) {
+    return prettier.format(sourceCode);
   }
 
   generate() {
