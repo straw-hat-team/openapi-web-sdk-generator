@@ -42,8 +42,8 @@ at the root of your project.
 // <rootDir>/openapi-web-sdk-generator.config.js
 const { MyCodegen } = require('./lib/my-codegen');
 
-module.exports = (api) => {
+module.exports = (toolkit) => {
   // You must pass `api` to your custom codegen module.
-  api.addGenerator(new ReactQueryCodegen(api));
+  toolkit.addGenerator(new ReactQueryCodegen(toolkit));
 };
 ```
