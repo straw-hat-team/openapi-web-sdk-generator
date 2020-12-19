@@ -13,7 +13,7 @@ export function renderOperationExportStatement(args: { operationExportPath: stri
   });
 }
 
-export function getMutationOperationSourceCode(args: { operation: OperationObject; importPath: string }) {
+export function renderMutationOperationSourceCode(args: { operation: OperationObject; importPath: string }) {
   return templateDir.render('mutation-operation.ts.ejs', {
     functionName: camelCase(args.operation.operationId),
     pascalFunctionName: pascalCase(args.operation.operationId),
@@ -21,7 +21,7 @@ export function getMutationOperationSourceCode(args: { operation: OperationObjec
   });
 }
 
-export function getQueryOperationSourceCode(args: { operation: OperationObject; importPath: string }) {
+export function renderQueryOperationSourceCode(args: { operation: OperationObject; importPath: string }) {
   return templateDir.render('query-operation.ts.ejs', {
     functionName: camelCase(args.operation.operationId),
     pascalFunctionName: pascalCase(args.operation.operationId),

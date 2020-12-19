@@ -3,8 +3,8 @@ import * as path from 'path';
 import { CodegenBase } from '../../codegen-base';
 import { IToolkit, OperationObject, PathItemObject } from '../../types';
 import {
-  getMutationOperationSourceCode,
-  getQueryOperationSourceCode,
+  renderMutationOperationSourceCode,
+  renderQueryOperationSourceCode,
   renderOperationExportStatement,
 } from './template';
 
@@ -41,8 +41,8 @@ export class ReactQueryFetcherCodegen extends CodegenBase {
     this.toolkit.outputDir.createDirSync(operationDirPath);
 
     const sourceCode = isQuery(args.operationMethod)
-      ? getQueryOperationSourceCode({ operation: args.operation, importPath: this.importPath })
-      : getMutationOperationSourceCode({ operation: args.operation, importPath: this.importPath });
+      ? renderQueryOperationSourceCode({ operation: args.operation, importPath: this.importPath })
+      : renderMutationOperationSourceCode({ operation: args.operation, importPath: this.importPath });
 
     this.toolkit.outputDir.writeFileSync(`${operationFilePath}.ts`, this.toolkit.formatCode(sourceCode));
 
