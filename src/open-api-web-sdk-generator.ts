@@ -5,19 +5,19 @@ import { OperationObject, PathItemObject } from './types';
 import { hasOperationId, isOperationKey } from './helpers';
 import { CodegenBase } from './codegen-base';
 
-export interface CodegenArgs {
+export interface OpenApiWebSdkGeneratorArgs {
   document: OpenAPIV3.Document;
   paths: {
     outputDir: string;
   };
 }
 
-export class Codegen {
+export class OpenApiWebSdkGenerator {
   public outputDir: OutputDir;
   public document: OpenAPIV3.Document;
   public generators: Set<CodegenBase>;
 
-  constructor(args: CodegenArgs) {
+  constructor(args: OpenApiWebSdkGeneratorArgs) {
     this.document = args.document;
     this.outputDir = new OutputDir(args.paths.outputDir);
     this.generators = new Set([new FetcherCodegen(this)]);

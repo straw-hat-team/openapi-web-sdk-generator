@@ -1,2 +1,1 @@
-export * from './codegen';
-export { readOpenApiFile } from './helpers';
+export * from './open-api-web-sdk-generator';

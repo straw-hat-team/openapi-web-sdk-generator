@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Command, flags } from '@oclif/command';
-import { Codegen } from '../codegen';
+import { OpenApiWebSdkGenerator } from '../open-api-web-sdk-generator';
 import { readOpenApiFile } from '../helpers';
 
 export default class LocalCommand extends Command {
@@ -20,7 +20,7 @@ export default class LocalCommand extends Command {
   async run() {
     const { flags } = this.parse(LocalCommand);
 
-    new Codegen({
+    new OpenApiWebSdkGenerator({
       document: readOpenApiFile(flags.config),
       paths: {
         outputDir: path.resolve(flags.output),
