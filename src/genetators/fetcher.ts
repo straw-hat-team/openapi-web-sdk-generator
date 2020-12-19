@@ -2,20 +2,31 @@ import { camelCase, pascalCase } from 'change-case';
 import * as prettier from '../prettier';
 import { getOperationDirectory, getOperationFileName } from '../helpers';
 import { TemplateDir } from '../template-dir';
-import path from 'path';
+import * as path from 'path';
 import { CodegenBase } from '../codegen-base';
-import { OperationObject, PathItemObject } from '../types';
+import { IToolkit, OperationObject, PathItemObject } from '../types';
 
 const templateDir = new TemplateDir(path.join(__dirname, '..', '..', 'templates', 'generators', 'fetcher'));
 
+export interface FetcherCodegenArgs {
+  dirPath?: string;
+}
+
 export class FetcherCodegen extends CodegenBase {
+  private dirPath: string;
+
+  constructor(toolkit: IToolkit, args?: FetcherCodegenArgs) {
+    super(toolkit);
+    this.dirPath = args?.dirPath ?? '.';
+  }
+
   generateOperation(args: {
     operationMethod: string;
     operationPath: string;
     pathItem: PathItemObject;
     operation: OperationObject;
   }) {
-    const operationDirPath = getOperationDirectory(args.pathItem, args.operation);
+    const operationDirPath = path.join(this.dirPath, getOperationDirectory(args.pathItem, args.operation));
     const operationFilePath = getOperationFileName(operationDirPath, args.operation);
 
     this.toolkit.outputDir.createDirSync(operationDirPath);
