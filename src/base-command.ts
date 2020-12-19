@@ -1,18 +1,15 @@
 import { Command } from '@oclif/command';
 import { loadConfig } from './helpers';
-import { OpenApiWebSdkGenerator } from './open-api-web-sdk-generator';
-import { FetcherCodegen } from './generators/fetcher';
+import { IToolkit } from './types';
 
-export type ConfigFactory = (api: OpenApiWebSdkGenerator) => void;
+export type ConfigFactory = (api: IToolkit) => void;
 
-function defaultConfigFactory(api: OpenApiWebSdkGenerator) {
-  api.addGenerator(new FetcherCodegen(api));
-}
+const DEFAULT_CONFIG_FACTORY = Function.prototype as ConfigFactory;
 
 export abstract class BaseCommand extends Command {
-  configFactory: ConfigFactory = defaultConfigFactory;
+  configFactory: ConfigFactory = DEFAULT_CONFIG_FACTORY;
 
   async init() {
-    this.configFactory = loadConfig() ?? defaultConfigFactory;
+    this.configFactory = loadConfig() ?? DEFAULT_CONFIG_FACTORY;
   }
 }
