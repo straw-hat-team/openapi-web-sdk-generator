@@ -1,30 +1,8 @@
-import { camelCase, pascalCase } from 'change-case';
-import { getOperationDirectory, getOperationFilePath } from '../helpers';
-import { TemplateDir } from '../template-dir';
+import { getOperationDirectory, getOperationFilePath } from '../../helpers';
 import * as path from 'path';
-import { CodegenBase } from '../codegen-base';
-import { IToolkit, OperationObject, PathItemObject } from '../types';
-
-const templateDir = new TemplateDir(path.join(__dirname, '..', '..', 'templates', 'generators', 'fetcher'));
-
-function renderOperationExportStatement(args: { operationExportPath: string }) {
-  return templateDir.render('index-export-statement.ts.ejs', {
-    operationFileName: args.operationExportPath,
-  });
-}
-
-function renderOperationFileSourceCode(args: {
-  operationMethod: string;
-  operationPath: string;
-  operation: OperationObject;
-}) {
-  return templateDir.render('operation.ts.ejs', {
-    functionName: camelCase(args.operation.operationId),
-    typePrefix: pascalCase(args.operation.operationId),
-    operationMethod: args.operationMethod.toUpperCase(),
-    operationPath: args.operationPath,
-  });
-}
+import { CodegenBase } from '../../codegen-base';
+import { IToolkit, OperationObject, PathItemObject } from '../../types';
+import { renderOperationExportStatement, renderOperationFileSourceCode } from './template';
 
 export interface FetcherCodegenConfig {
   dirPath?: string;
