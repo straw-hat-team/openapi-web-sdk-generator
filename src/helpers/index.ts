@@ -3,6 +3,9 @@ import { paramCase } from 'change-case';
 import * as path from 'path';
 import { OpenAPIV3 } from 'openapi-types';
 import * as fs from 'fs';
+import { createDebugger } from '../debug';
+
+const debug = createDebugger('helpers');
 
 export function isOperationKey(key: string) {
   return ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(key);
@@ -48,5 +51,11 @@ export function loadConfig() {
     return;
   }
 
-  return require(filePath);
+  debug(`Configuration file found. Loading ${filePath}`);
+
+  try {
+    return require(filePath);
+  } catch (e) {
+    throw new Error(`Failed to load configuration file ${filePath}.\n${e.message}`);
+  }
 }
