@@ -32,18 +32,3 @@ class MyCodegen extends CodegenBase {
 
 module.exports = { MyCodegen };
 ```
-
-## How to use custom generators
-
-You can add your custom generators using `openapi-web-sdk-generator.config.js`
-at the root of your project.
-
-```js
-// <rootDir>/openapi-web-sdk-generator.config.js
-const { MyCodegen } = require('./lib/my-codegen');
-
-module.exports = (toolkit) => {
-  // You must pass `api` to your custom codegen module.
-  toolkit.addGenerator(new ReactQueryCodegen(toolkit));
-};
-```

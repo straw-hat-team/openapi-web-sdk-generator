@@ -25,7 +25,7 @@
     "prepack": "yarn build && yarn oclif:manifest && yarn oclif:readme",
     "postpack": "rimraf oclif.manifest.json",
     "oclif:manifest": "oclif-dev manifest",
-    "oclif:readme": "oclif-dev readme"
+    "oclif:readme": "oclif-dev readme --multi --dir=docs/commands"
   },
   "bin": {
     "sht-openapi-web-sdk-generator": "bin/sht-openapi-web-sdk-generator"

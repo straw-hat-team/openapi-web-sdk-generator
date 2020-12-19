@@ -1,55 +1,50 @@
 # @straw-hat/openapi-web-sdk-generator
 
 ## Usage
-<!-- usage -->
-```sh-session
-$ npm install -g @straw-hat/openapi-web-sdk-generator
-$ sht-openapi-web-sdk-generator COMMAND
-running command...
-$ sht-openapi-web-sdk-generator (-v|--version|version)
-@straw-hat/openapi-web-sdk-generator/0.4.0 darwin-x64 node-v15.3.0
-$ sht-openapi-web-sdk-generator --help [COMMAND]
-USAGE
-  $ sht-openapi-web-sdk-generator COMMAND
-...
+
+Before anything, we need to enable the generators, to do that we will create a
+file in the package root directory called `openapi-web-sdk-generator.config.js`.
+
+```bash 
+touch openapi-web-sdk-generator.config.js
 ```
-<!-- usagestop -->
+
+Then add the generators.
+
+```js
+// <rootDir>/openapi-web-sdk-generator.config.js
+
+const {
+  ReactQueryFetcherCodegen,
+  FetcherCodegen,
+} = require('@straw-hat/openapi-web-sdk-generator/dist/generators');
+
+// Make sure to export a function like the following one
+module.exports = (toolkit) => {
+  // Use toolkit.addGenerator to add generators
+  
+  // Generates operations for @straw-hat/fetcher package
+  toolkit.addGenerator(new FetcherCodegen(toolkit));
+};
+```
+
+Run the generator command.
+
+```bash
+sht-openapi-web-sdk-generator local \
+  --config='./data/openapi.json' \
+  --output='./src/operations'
+```
 
 <!-- commands -->
-* [`sht-openapi-web-sdk-generator help [COMMAND]`](#sht-openapi-web-sdk-generator-help-command)
-* [`sht-openapi-web-sdk-generator local`](#sht-openapi-web-sdk-generator-local)
 
-## `sht-openapi-web-sdk-generator help [COMMAND]`
+## Command Topics
 
-display help for sht-openapi-web-sdk-generator
+* [`sht-openapi-web-sdk-generator help`](docs/commands/help.md) - display help
+  for sht-openapi-web-sdk-generator
+* [`sht-openapi-web-sdk-generator local`](docs/commands/local.md) - Generate the
+  code from a local OpenAPI V3 file.
 
-```
-USAGE
-  $ sht-openapi-web-sdk-generator help [COMMAND]
-
-ARGUMENTS
-  COMMAND  command to show help for
-
-OPTIONS
-  --all  see all commands in CLI
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
-
-## `sht-openapi-web-sdk-generator local`
-
-Generate the code from a local OpenAPI V3 file.
-
-```
-USAGE
-  $ sht-openapi-web-sdk-generator local
-
-OPTIONS
-  --config=config  (required) OpenAPI V3 configuration file.
-  --output=output  (required) Output directory path of the codegen.
-```
-
-_See code: [dist/commands/local.ts](https://github.com/straw-hat-team/openapi-web-sdk-generator/blob/v0.4.0/dist/commands/local.ts)_
 <!-- commandsstop -->
 
 ## What's next?
