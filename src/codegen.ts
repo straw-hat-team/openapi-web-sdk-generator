@@ -1,8 +1,10 @@
 import type { OpenAPIV3 } from 'openapi-types';
 import * as fs from 'fs';
 import { OutputDir } from './output-dir';
-import { PathItem, PathItemObject } from './path-item';
-import { PathsConfig } from './operation';
+import { FetcherCodegen } from './genetators/fetcher';
+import { OperationObject, PathItemObject } from './types';
+import { hasOperationId, isOperationKey } from './helpers';
+import { CodegenBase } from './codegen-base';
 
 export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
   if (!fs.existsSync(filePath)) {
@@ -17,40 +19,51 @@ export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
   return JSON.parse(fileData);
 }
 
-export interface CodegenConfig {
+export interface CodegenArgs {
   document: OpenAPIV3.Document;
-  paths: PathsConfig;
+  paths: {
+    outputDir: string;
+  };
 }
 
 export class Codegen {
-  private outputDir: OutputDir;
-  private paths: PathsConfig;
-  private document: OpenAPIV3.Document;
+  public outputDir: OutputDir;
+  public document: OpenAPIV3.Document;
+  public generators: Set<CodegenBase>;
 
-  constructor(args: CodegenConfig) {
+  constructor(args: CodegenArgs) {
     this.document = args.document;
-    this.paths = args.paths;
     this.outputDir = new OutputDir(args.paths.outputDir);
+    this.generators = new Set([new FetcherCodegen(this)]);
+  }
+
+  addGenerator(generator: CodegenBase) {
+    this.generators.add(generator);
+    return this;
   }
 
   generate() {
     this.outputDir.resetDir();
 
-    return Object.entries<OpenAPIV3.PathItemObject>(this.document.paths)
-      .map(this.createPathItemFromTuple)
-      .map(this.generatePathItem);
-  }
+    for (const [operationPath, pathItem] of Object.entries<PathItemObject>(this.document.paths)) {
+      for (const [operationMethod, operation] of Object.entries<OperationObject>(pathItem as any)) {
+        if (!isOperationKey(operationMethod)) {
+          continue;
+        }
 
-  private generatePathItem(pathItem: PathItem) {
-    return pathItem.generate();
-  }
+        if (!hasOperationId(operation)) {
+          throw new Error(`Operation Id is missing for "${operationMethod} ${operationPath} "`);
+        }
 
-  private createPathItemFromTuple = ([operationPath, config]: [string, PathItemObject]) => {
-    return new PathItem({
-      operationPath,
-      config,
-      document: this.document,
-      paths: this.paths,
-    });
-  };
+        this.generators.forEach((generator) =>
+          generator.generateOperation({
+            operation,
+            operationPath,
+            operationMethod,
+            pathItem,
+          })
+        );
+      }
+    }
+  }
 }

@@ -29,7 +29,7 @@ export class Dir {
 
   createDirSync(...pathsSegments: string[]) {
     const dirPath = this.resolve(...pathsSegments);
-    this.debug(`Creating directory ${dirPath}`);
+    this.debug(`Ensure directory ${dirPath}`);
     return makeDir.sync(dirPath);
   }
 
