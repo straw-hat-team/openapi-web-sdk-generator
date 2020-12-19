@@ -28,7 +28,7 @@ export class OpenApiWebSdkGenerator {
     return this;
   }
 
-  formatter(sourceCode: string) {
+  formatCode(sourceCode: string) {
     return prettier.format(sourceCode);
   }
 
