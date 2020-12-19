@@ -26,9 +26,9 @@ export function getOperationDirectory(pathItem: PathItemObject, operation: Opera
   return path.join(...normalizedDirNames);
 }
 
-export function getOperationFileName(operationDirPath: string, operation: OperationObject, ext = 'ts') {
+export function getOperationFilePath(operationDirPath: string, operation: OperationObject) {
   const normalizedName = normalizeFileName(operation.operationId!);
-  return path.join(operationDirPath, `${normalizeFileName(normalizedName)}.${ext}`);
+  return path.join(operationDirPath, normalizeFileName(normalizedName));
 }
 
 export function readOpenApiFile(filePath: string): OpenAPIV3.Document {

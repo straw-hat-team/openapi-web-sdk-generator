@@ -1,5 +1,5 @@
 import { camelCase, pascalCase } from 'change-case';
-import { getOperationDirectory, getOperationFileName } from '../helpers';
+import { getOperationDirectory, getOperationFilePath } from '../helpers';
 import { TemplateDir } from '../template-dir';
 import * as path from 'path';
 import { CodegenBase } from '../codegen-base';
@@ -33,7 +33,7 @@ export class ReactQueryFetcherCodegen extends CodegenBase {
     operation: OperationObject;
   }) {
     const operationDirPath = path.join(this.dirPath, getOperationDirectory(args.pathItem, args.operation));
-    const operationFilePath = getOperationFileName(operationDirPath, args.operation);
+    const operationFilePath = getOperationFilePath(operationDirPath, args.operation);
 
     this.toolkit.outputDir.createDirSync(operationDirPath);
 
@@ -43,7 +43,7 @@ export class ReactQueryFetcherCodegen extends CodegenBase {
 
     const formattedSourceCode = this.toolkit.formatCode(sourceCode);
 
-    this.toolkit.outputDir.writeFileSync(operationFilePath, formattedSourceCode);
+    this.toolkit.outputDir.writeFileSync(`${operationFilePath}.ts`, formattedSourceCode);
   }
 
   getMutationOperationSourceCode(args: { operation: OperationObject }) {
