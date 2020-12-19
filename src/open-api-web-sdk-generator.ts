@@ -1,6 +1,5 @@
 import type { OpenAPIV3 } from 'openapi-types';
 import { OutputDir } from './output-dir';
-import { FetcherCodegen } from './genetators/fetcher';
 import { OperationObject, PathItemObject } from './types';
 import { hasOperationId, isOperationKey } from './helpers';
 import { CodegenBase } from './codegen-base';
@@ -20,7 +19,7 @@ export class OpenApiWebSdkGenerator {
   constructor(args: OpenApiWebSdkGeneratorArgs) {
     this.document = args.document;
     this.outputDir = new OutputDir(args.paths.outputDir);
-    this.generators = new Set([new FetcherCodegen(this)]);
+    this.generators = new Set();
   }
 
   addGenerator(generator: CodegenBase) {

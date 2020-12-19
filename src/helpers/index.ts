@@ -2,7 +2,7 @@ import { OperationObject, PathItemObject } from '../types';
 import { paramCase } from 'change-case';
 import * as path from 'path';
 import { OpenAPIV3 } from 'openapi-types';
-import fs from 'fs';
+import * as fs from 'fs';
 
 export function isOperationKey(key: string) {
   return ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(key);
@@ -39,4 +39,14 @@ export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
 
   const fileData = fs.readFileSync(filePath).toString();
   return JSON.parse(fileData);
+}
+
+export function loadConfig() {
+  const filePath = path.resolve(process.cwd(), 'openapi-web-sdk-generator.config.js');
+
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  return require(filePath);
 }

@@ -1,9 +1,10 @@
 import * as path from 'path';
-import { Command, flags } from '@oclif/command';
+import { flags } from '@oclif/command';
 import { OpenApiWebSdkGenerator } from '../open-api-web-sdk-generator';
 import { readOpenApiFile } from '../helpers';
+import { BaseCommand } from '../base-command';
 
-export default class LocalCommand extends Command {
+export default class LocalCommand extends BaseCommand {
   static description = 'Generate the code from a local OpenAPI V3 file.';
 
   static flags = {
@@ -20,11 +21,15 @@ export default class LocalCommand extends Command {
   async run() {
     const { flags } = this.parse(LocalCommand);
 
-    new OpenApiWebSdkGenerator({
+    const generator = new OpenApiWebSdkGenerator({
       document: readOpenApiFile(flags.config),
       paths: {
         outputDir: path.resolve(flags.output),
       },
-    }).generate();
+    });
+
+    this.configFactory(generator);
+
+    generator.generate();
   }
 }
