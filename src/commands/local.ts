@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Command, flags } from '@oclif/command';
-import { Codegen, readOpenApiFile } from '../codegen';
+import { Codegen } from '../codegen';
+import { readOpenApiFile } from '../helpers';
 
 export default class LocalCommand extends Command {
   static description = 'Generate the code from a local OpenAPI V3 file.';

@@ -1,6 +1,8 @@
 import { OperationObject, PathItemObject } from '../types';
 import { paramCase } from 'change-case';
 import * as path from 'path';
+import { OpenAPIV3 } from 'openapi-types';
+import fs from 'fs';
 
 export function isOperationKey(key: string) {
   return ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(key);
@@ -24,4 +26,17 @@ export function getOperationDirectory(pathItem: PathItemObject, operation: Opera
 export function getOperationFileName(operationDirPath: string, operation: OperationObject, ext = 'ts') {
   const normalizedName = normalizeFileName(operation.operationId!);
   return path.join(operationDirPath, `${normalizeFileName(normalizedName)}.${ext}`);
+}
+
+export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`${filePath} OpenAPI file does not exists.`);
+  }
+
+  if (!fs.statSync(filePath).isFile()) {
+    throw new Error(`${filePath} is not a file.`);
+  }
+
+  const fileData = fs.readFileSync(filePath).toString();
+  return JSON.parse(fileData);
 }

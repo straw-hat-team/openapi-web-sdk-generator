@@ -1,23 +1,9 @@
 import type { OpenAPIV3 } from 'openapi-types';
-import * as fs from 'fs';
 import { OutputDir } from './output-dir';
 import { FetcherCodegen } from './genetators/fetcher';
 import { OperationObject, PathItemObject } from './types';
 import { hasOperationId, isOperationKey } from './helpers';
 import { CodegenBase } from './codegen-base';
-
-export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`${filePath} OpenAPI file does not exists.`);
-  }
-
-  if (!fs.statSync(filePath).isFile()) {
-    throw new Error(`${filePath} is not a file.`);
-  }
-
-  const fileData = fs.readFileSync(filePath).toString();
-  return JSON.parse(fileData);
-}
 
 export interface CodegenArgs {
   document: OpenAPIV3.Document;
