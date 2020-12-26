@@ -2,6 +2,8 @@ import { useFetcherMutation, UseFetcherMutationArgs } from '@straw-hat/react-que
 import { Fetcher } from '@straw-hat/fetcher';
 import { <%= functionName %> } from '<%= importPath %>';
 
+const MUTATION_KEY = '<%= functionName %>';
+
 export type Use<%= pascalFunctionName %> = UseFetcherMutationArgs<
   any,
   any,
@@ -12,8 +14,12 @@ export function use<%= pascalFunctionName %>(
   client: Fetcher,
   args: Omit<Use<%= pascalFunctionName %>, 'endpoint'>
 ) {
+  const options = args.options ?? {};
   return useFetcherMutation(client, {
-    ...args,
+    options: {
+      mutationKey: MUTATION_KEY,
+      ...options,
+    },
     endpoint: <%= functionName %>,
   });
 }
