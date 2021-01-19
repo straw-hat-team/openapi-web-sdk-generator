@@ -7,12 +7,12 @@ export abstract class CodegenBase {
     this.toolkit = toolkit;
   }
 
-  abstract generateOperation(_args: {
+  abstract generateOperation?(_args: {
     operationMethod: string;
     operationPath: string;
     pathItem: PathItemObject;
     operation: OperationObject;
   }): any;
 
-  abstract generateSchema(_args: { schemaName: string; schemaObject: OpenAPIV3Schema }): any;
+  abstract generateSchema?(_args: { schemaName: string; schemaObject: OpenAPIV3Schema }): any;
 }

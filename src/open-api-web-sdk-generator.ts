@@ -39,7 +39,7 @@ export class OpenApiWebSdkGenerator {
 
     for (const [schemaName, schemaObject] of Object.entries<OpenAPIV3Schema>(schemas)) {
       this.generators.forEach((generator) =>
-        generator.generateSchema({
+        generator.generateSchema?.({
           schemaName,
           schemaObject,
         })
@@ -57,7 +57,7 @@ export class OpenApiWebSdkGenerator {
         }
 
         this.generators.forEach((generator) =>
-          generator.generateOperation({
+          generator.generateOperation?.({
             operation,
             operationPath,
             operationMethod,
