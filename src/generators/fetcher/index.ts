@@ -1,7 +1,8 @@
 import { getOperationDirectory, getOperationFilePath } from '../../helpers';
 import * as path from 'path';
 import { CodegenBase } from '../../codegen-base';
-import { IToolkit, OperationObject, PathItemObject } from '../../types';
+import { pascalCase } from 'change-case';
+import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from '../../types';
 import { renderOperationExportStatement, renderOperationFileSourceCode } from './template';
 
 export interface FetcherCodegenConfig {
@@ -14,6 +15,11 @@ export class FetcherCodegen extends CodegenBase {
   constructor(toolkit: IToolkit, args?: FetcherCodegenConfig) {
     super(toolkit);
     this.dirPath = args?.dirPath ?? '.';
+  }
+
+  generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
+    const normalizedSchemaName = pascalCase(args.schemaName);
+    this.toolkit.outputDir.appendFileSync(`types.ts`, `type ${normalizedSchemaName} = any;\n`);
   }
 
   generateOperation(args: {

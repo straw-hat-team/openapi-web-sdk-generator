@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from 'openapi-types';
 import { OutputDir } from './output-dir';
-import { OperationObject, PathItemObject } from './types';
+import { OperationObject, PathItemObject, OpenAPIV3Schemas, OpenAPIV3Schema } from './types';
 import { hasOperationId, isOperationKey } from './helpers';
 import { CodegenBase } from './codegen-base';
 import * as prettier from './prettier';
@@ -32,8 +32,23 @@ export class OpenApiWebSdkGenerator {
     return prettier.format(sourceCode);
   }
 
+  #perGenerator = (callback: (generator: CodegenBase) => any) => {
+    this.generators.forEach(callback);
+  };
+
   async generate() {
     this.outputDir.resetDir();
+
+    const schemas: OpenAPIV3Schemas = this.document.components?.schemas ?? {};
+
+    for (const [schemaName, schemaObject] of Object.entries<OpenAPIV3Schema>(schemas)) {
+      this.#perGenerator((generator) =>
+        generator.generateSchema?.({
+          schemaName,
+          schemaObject,
+        })
+      );
+    }
 
     for (const [operationPath, pathItem] of Object.entries<PathItemObject>(this.document.paths)) {
       for (const [operationMethod, operation] of Object.entries<OperationObject>(pathItem as any)) {
@@ -45,8 +60,8 @@ export class OpenApiWebSdkGenerator {
           throw new Error(`Operation Id is missing for "${operationMethod} ${operationPath} "`);
         }
 
-        this.generators.forEach((generator) =>
-          generator.generateOperation({
+        this.#perGenerator((generator) =>
+          generator.generateOperation?.({
             operation,
             operationPath,
             operationMethod,
