@@ -32,13 +32,17 @@ export class OpenApiWebSdkGenerator {
     return prettier.format(sourceCode);
   }
 
+  #perGenerator = (callback: (generator: CodegenBase) => any) => {
+    this.generators.forEach(callback);
+  };
+
   async generate() {
     this.outputDir.resetDir();
 
     const schemas: OpenAPIV3Schemas = this.document.components?.schemas ?? {};
 
     for (const [schemaName, schemaObject] of Object.entries<OpenAPIV3Schema>(schemas)) {
-      this.generators.forEach((generator) =>
+      this.#perGenerator((generator) =>
         generator.generateSchema?.({
           schemaName,
           schemaObject,
@@ -56,7 +60,7 @@ export class OpenApiWebSdkGenerator {
           throw new Error(`Operation Id is missing for "${operationMethod} ${operationPath} "`);
         }
 
-        this.generators.forEach((generator) =>
+        this.#perGenerator((generator) =>
           generator.generateOperation?.({
             operation,
             operationPath,
