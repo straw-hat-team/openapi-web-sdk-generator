@@ -2,7 +2,7 @@ import { prepareTest } from './support-files';
 import { FetcherCodegen } from '../../src/generators/fetcher';
 
 describe('fetcher generator', () => {
-  it('generates the types.ts file', async () => {
+  test('generates the types.ts file', async () => {
     await prepareTest(['generating-types'], async ({ tmpDir, generator }) => {
       generator.addGenerator(new FetcherCodegen(generator));
       await generator.generate();

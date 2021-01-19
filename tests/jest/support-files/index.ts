@@ -1,18 +1,10 @@
 import path from 'path';
-import fs from 'fs';
-import { Dir } from '../../../src/dir';
 import { OpenApiWebSdkGenerator } from '../../../src/open-api-web-sdk-generator';
 import { readOpenApiFile } from '../../../src/helpers';
+import { TmpDir } from './tmp-dir';
 
 const TMP_BASE_DIR = path.resolve(__dirname, '..', '..', '..', '.tmp');
 const PET_STORE_FILE_PATH = path.resolve(__dirname, 'pet-store.json');
-
-class TmpDir extends Dir {
-  exists(...pathsSegments: string[]) {
-    const path = this.resolve(...pathsSegments);
-    return fs.existsSync(path);
-  }
-}
 
 export function prepareTest(
   dirPath: string[],
