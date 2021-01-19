@@ -1,4 +1,4 @@
-import { IToolkit, OperationObject, PathItemObject } from './types';
+import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from './types';
 
 export abstract class CodegenBase {
   toolkit: IToolkit;
@@ -13,4 +13,6 @@ export abstract class CodegenBase {
     pathItem: PathItemObject;
     operation: OperationObject;
   }): any;
+
+  abstract generateSchema(_args: { schemaName: string; schemaObject: OpenAPIV3Schema }): any;
 }

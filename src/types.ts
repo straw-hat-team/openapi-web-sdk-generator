@@ -16,3 +16,9 @@ export interface IToolkit {
   formatCode(sourceCode: string): string;
   addGenerator(generator: CodegenBase): IToolkit;
 }
+
+export type OpenAPIV3Schema = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject;
+
+export type OpenAPIV3Schemas = {
+  [key: string]: OpenAPIV3Schema;
+};
