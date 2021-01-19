@@ -27,6 +27,8 @@ export class ReactQueryFetcherCodegen extends CodegenBase {
     this.importPath = args.importPath;
   }
 
+  generateSchema = undefined;
+
   generateOperation(args: {
     operationMethod: string;
     operationPath: string;
