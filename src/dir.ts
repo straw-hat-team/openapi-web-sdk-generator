@@ -63,9 +63,7 @@ export class Dir {
   prependFileSync(relativePath: string, data: any) {
     const filePath = this.resolve(relativePath);
     const fileData = fs.readFileSync(filePath);
-
     this.debug(`Prepending to ${filePath}`);
-
     return fs.writeFileSync(filePath, Buffer.concat([Buffer.from(data), Buffer.from(fileData)]));
   }
 
