@@ -2,7 +2,11 @@ import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
 import { OpenAPIV3 } from 'openapi-types';
 
-type TypeScriptType = { output: string; docs: string };
+type TypeScriptType = {
+  importModule?: string;
+  output: string;
+  docs: string;
+};
 
 // TODO: handle nullable
 // TODO: handle example
@@ -189,17 +193,24 @@ function fromArraySchemaObjectToTypeScripType(data: OpenAPIV3.ArraySchemaObject)
   };
 }
 
+function fromRefSchemaObjectToTypeScripType(data: OpenAPIV3.ReferenceObject): TypeScriptType {
+  const refs = data.$ref.replace('#/', '').split('/');
+  const referenceModule = refs[1];
+  const referenceType = refs[2];
+
+  return {
+    importModule: referenceModule,
+    docs: '',
+    output: `${referenceModule}.${referenceType}`,
+  };
+}
+
 function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
   if ('$ref' in data) {
-    // TODO: Fix $ref object type
-    return {
-      docs: `
-      /**
-        * Is a Ref of ${data.$ref}
-        */`,
-      output: 'any',
-    };
+    return fromRefSchemaObjectToTypeScripType(data);
   }
+
+  // #/components/schemas/Category
 
   if (data.allOf) {
     return fromAllOfSchemaObjectToTypeScripType(data.allOf);

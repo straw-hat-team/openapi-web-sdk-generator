@@ -17,7 +17,8 @@ export class FetcherCodegen extends CodegenBase {
   }
 
   generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
-    this.toolkit.outputDir.appendFileSync(`types.ts`, this.toolkit.formatCode(generateTypes(args)));
+    this.toolkit.outputDir.createDirSync('components');
+    this.toolkit.outputDir.appendFileSync('components/schemas.ts', this.toolkit.formatCode(generateTypes(args)));
   }
 
   generateOperation(args: {

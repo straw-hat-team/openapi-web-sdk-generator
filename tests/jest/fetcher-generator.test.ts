@@ -6,7 +6,7 @@ describe('fetcher generator', () => {
     await prepareTest(['generating-types'], async ({ tmpDir, generator }) => {
       generator.addGenerator(new FetcherCodegen(generator));
       await generator.generate();
-      expect(tmpDir.exists('types.ts')).toBeTruthy();
+      expect(tmpDir.exists('components/schemas.ts')).toBeTruthy();
     });
   });
 });
