@@ -7,6 +7,18 @@ function toTypeScripType(data: OpenAPIV3Schema) {
     return 'any';
   }
 
+  if (data.type === 'boolean') {
+    return 'boolean';
+  }
+
+  if (data.type === 'number') {
+    return 'number';
+  }
+
+  if (data.type === 'string') {
+    return 'string';
+  }
+
   if (data.type === 'integer') {
     return 'number';
   }
