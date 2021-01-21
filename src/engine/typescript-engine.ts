@@ -4,6 +4,9 @@ import { OpenAPIV3 } from 'openapi-types';
 
 type TypeScriptType = { output: string; docs: string };
 
+// TODO: handle nullable
+// TODO: handle example
+
 function asString(value: any) {
   return `"${value}"`;
 }
@@ -23,7 +26,7 @@ function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): Type
     typeOutput.push(`{ ${propertiesOutput.join(';\n')} }`);
   }
 
-  return { output: typeOutput.join(''), docs: '' };
+  return { output: typeOutput.join(''), docs: createDocs(data) };
 }
 
 function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
@@ -152,6 +155,27 @@ function fromUnknownSchemaObjectToTypeScripType(data: OpenAPIV3.SchemaObject): T
   };
 }
 
+function fromAllOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
+  return {
+    docs: '',
+    output: 'any',
+  };
+}
+
+function fromOneOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
+  return {
+    docs: '',
+    output: 'any',
+  };
+}
+
+function fromAnyOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
+  return {
+    docs: '',
+    output: 'any',
+  };
+}
+
 function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
   if ('$ref' in data) {
     // TODO: Fix $ref object type
@@ -162,6 +186,18 @@ function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
         */`,
       output: 'any',
     };
+  }
+
+  if (data.allOf) {
+    return fromAllOfSchemaObjectToTypeScripType(data.allOf);
+  }
+
+  if (data.oneOf) {
+    return fromOneOfSchemaObjectToTypeScripType(data.oneOf);
+  }
+
+  if (data.anyOf) {
+    return fromAnyOfSchemaObjectToTypeScripType(data.anyOf);
   }
 
   if (data.type === 'boolean') {
