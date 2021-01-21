@@ -6,54 +6,77 @@ function asString(value: any) {
   return `"${value}"`;
 }
 
-function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; comment?: string } {
+function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; docs: string } {
   const typeOutput: string[] = [];
 
   if ('properties' in data) {
     const propertiesOutput = Object.entries(data.properties ?? {}).map((entry) => {
       const typeOutput = toTypeScripType(entry[1]);
       const optionalFlag = (data.required ?? []).includes(entry[0]) ? '' : '?';
-      return `${typeOutput.comment ?? '\n'}${entry[0]}${optionalFlag}: ${typeOutput.output}`;
+      return `${typeOutput.docs} \n ${entry[0]}${optionalFlag}: ${typeOutput.output}`;
     });
 
     typeOutput.push(`{ ${propertiesOutput.join(';\n')} }`);
   }
 
-  return { output: typeOutput.join('') };
+  return { output: typeOutput.join(''), docs: '' };
 }
 
-function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; comment?: string } {
-  const description = data.description ?? '';
+function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; docs: string } {
   const output = data.enum === undefined ? 'string' : data.enum.map(asString).join('|');
 
   return {
     output: output,
-    comment: `
-      /**
-      * ${description}
-      */
-    `,
+    docs: createDocs(data),
   };
 }
 
-function toTypeScripType(data: OpenAPIV3Schema): { output: string; comment?: string } {
+function createDocs(data: OpenAPIV3.SchemaObject) {
+  const docs = ['/**'];
+
+  if (data.description) {
+    docs.push(`* ${data.description}`);
+  }
+
+  if (data.deprecated) {
+    docs.push('* @deprecated');
+  }
+
+  if (data.externalDocs) {
+    docs.push(`* ${data.externalDocs.description}: ${data.externalDocs.url}`);
+  }
+
+  if (data.readOnly) {
+    docs.push('* @openapireadonly');
+  }
+
+  if (data.writeOnly) {
+    docs.push('* @openapiwriteonly');
+  }
+
+  docs.push('*/');
+
+  return docs.join('\n');
+}
+
+function toTypeScripType(data: OpenAPIV3Schema): { output: string; docs: string } {
   if ('$ref' in data) {
     // TODO: Fix $ref object type
     return {
-      comment: `
+      docs: `
       /**
         * Is a Ref of ${data.$ref}
-        */\n`,
+        */`,
       output: 'any',
     };
   }
 
   if (data.type === 'boolean') {
-    return { output: 'boolean' };
+    return { output: 'boolean', docs: '' };
   }
 
   if (data.type === 'number') {
-    return { output: 'number' };
+    return { output: 'number', docs: '' };
   }
 
   if (data.type === 'string') {
@@ -61,12 +84,12 @@ function toTypeScripType(data: OpenAPIV3Schema): { output: string; comment?: str
   }
 
   if (data.type === 'integer') {
-    return { output: 'number' };
+    return { output: 'number', docs: '' };
   }
 
   if (data.type === 'array') {
     // TODO: Fix array type
-    return { output: 'Array<any>' };
+    return { output: 'Array<any>', docs: '' };
   }
 
   if (data.type === 'object') {
@@ -74,7 +97,7 @@ function toTypeScripType(data: OpenAPIV3Schema): { output: string; comment?: str
   }
 
   return {
-    comment: `
+    docs: `
     /**
       * ${data.type} is unknown
       */\n`,
@@ -87,7 +110,7 @@ export function generateTypes(args: { schemaName: string; schemaObject: OpenAPIV
   const typeOutput = toTypeScripType(args.schemaObject);
 
   return `
-    ${typeOutput.comment ?? '\n'}
+    ${typeOutput.docs}
     export type ${normalizedSchemaName} = ${typeOutput.output};
   `;
 }
