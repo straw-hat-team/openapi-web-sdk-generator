@@ -1,6 +1,6 @@
 import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
-import { OpenAPIV3 } from 'openapi-types';
+import { ArraySchemaObject, OpenAPIV3 } from 'openapi-types';
 
 type TypeScriptType = { output: string; docs: string };
 
@@ -179,6 +179,16 @@ function fromAnyOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScri
   };
 }
 
+function fromArraySchemaObjectToTypeScripType(data: OpenAPIV3.ArraySchemaObject): TypeScriptType {
+  const type = toTypeScripType(data.items);
+
+  return {
+    docs: createDocs(data),
+    // TODO: handle Ref returns
+    output: `Array<${type}>`,
+  };
+}
+
 function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
   if ('$ref' in data) {
     // TODO: Fix $ref object type
@@ -220,8 +230,7 @@ function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
   }
 
   if (data.type === 'array') {
-    // TODO: Fix array type
-    return { output: 'Array<any>', docs: '' };
+    return fromArraySchemaObjectToTypeScripType(data);
   }
 
   if (data.type === 'object') {
