@@ -5,7 +5,7 @@ import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from '../.
 import { renderOperationExportStatement, renderOperationFileSourceCode } from './template';
 import { TypeSrcriptEngine } from '../../engine/typescript-engine';
 export interface FetcherCodegenConfig {
-  dirPath?: string
+  dirPath?: string;
 }
 
 export class FetcherCodegen extends CodegenBase {
@@ -17,7 +17,8 @@ export class FetcherCodegen extends CodegenBase {
   }
 
   generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
-    this.toolkit.outputDir.appendFileSync(`types.ts`, TypeSrcriptEngine.generateTypes(args));
+    const code = TypeSrcriptEngine.generateTypes(args);
+    this.toolkit.outputDir.appendFileSync(`types.ts`, this.toolkit.formatCode(code));
   }
 
   generateOperation(args: {
