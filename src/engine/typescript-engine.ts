@@ -4,7 +4,7 @@ import { OpenAPIV3Schema } from '../types';
 function toTypeScripType(data: OpenAPIV3Schema) {
   if ('$ref' in data) {
     // TODO: Fix $ref object type
-    return 'any';
+    return `any /* is a Ref:${data.$ref} */`;
   }
 
   if (data.type === 'boolean') {
