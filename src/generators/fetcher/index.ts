@@ -3,7 +3,7 @@ import * as path from 'path';
 import { CodegenBase } from '../../codegen-base';
 import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from '../../types';
 import { renderOperationExportStatement, renderOperationFileSourceCode } from './template';
-import { TypeSrcriptEngine } from '../../engine/typescript-engine';
+import { generateTypes } from '../../engine/typescript-engine';
 export interface FetcherCodegenConfig {
   dirPath?: string;
 }
@@ -17,8 +17,7 @@ export class FetcherCodegen extends CodegenBase {
   }
 
   generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
-    const code = TypeSrcriptEngine.generateTypes(args);
-    this.toolkit.outputDir.appendFileSync(`types.ts`, this.toolkit.formatCode(code));
+    this.toolkit.outputDir.appendFileSync(`types.ts`, this.toolkit.formatCode(generateTypes(args)));
   }
 
   generateOperation(args: {
