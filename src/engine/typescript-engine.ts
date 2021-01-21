@@ -2,11 +2,13 @@ import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
 import { OpenAPIV3 } from 'openapi-types';
 
+type TypeScriptType = { output: string; docs: string };
+
 function asString(value: any) {
   return `"${value}"`;
 }
 
-function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; docs: string } {
+function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
   const typeOutput: string[] = [];
 
   // TODO: handle additionalProperties key
@@ -24,7 +26,7 @@ function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { ou
   return { output: typeOutput.join(''), docs: '' };
 }
 
-function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; docs: string } {
+function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
   const output = data.enum === undefined ? 'string' : data.enum.map(asString).join('|');
 
   return {
@@ -125,7 +127,32 @@ function createDocs(data: OpenAPIV3.SchemaObject) {
   return docs.join('\n');
 }
 
-function toTypeScripType(data: OpenAPIV3Schema): { output: string; docs: string } {
+function fromBooleanSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
+  return {
+    output: 'boolean',
+    docs: createDocs(data),
+  };
+}
+
+function fromNumberSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
+  return {
+    output: 'number',
+    docs: createDocs(data),
+  };
+}
+
+function fromIntegerSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
+  return fromNumberSchemaObjectToTypeScripType(data);
+}
+
+function fromUnknownSchemaObjectToTypeScripType(data: OpenAPIV3.SchemaObject): TypeScriptType {
+  return {
+    docs: createDocs(data),
+    output: 'any',
+  };
+}
+
+function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
   if ('$ref' in data) {
     // TODO: Fix $ref object type
     return {
@@ -138,11 +165,11 @@ function toTypeScripType(data: OpenAPIV3Schema): { output: string; docs: string 
   }
 
   if (data.type === 'boolean') {
-    return { output: 'boolean', docs: '' };
+    return fromBooleanSchemaObjectToTypeScripType(data);
   }
 
   if (data.type === 'number') {
-    return { output: 'number', docs: '' };
+    return fromNumberSchemaObjectToTypeScripType(data);
   }
 
   if (data.type === 'string') {
@@ -150,7 +177,7 @@ function toTypeScripType(data: OpenAPIV3Schema): { output: string; docs: string 
   }
 
   if (data.type === 'integer') {
-    return { output: 'number', docs: '' };
+    return fromIntegerSchemaObjectToTypeScripType(data);
   }
 
   if (data.type === 'array') {
@@ -162,13 +189,7 @@ function toTypeScripType(data: OpenAPIV3Schema): { output: string; docs: string 
     return fromSchemaObjectToTypeScripType(data);
   }
 
-  return {
-    docs: `
-    /**
-      * ${data.type} is unknown
-      */\n`,
-    output: 'any',
-  };
+  return fromUnknownSchemaObjectToTypeScripType(data);
 }
 
 export function generateTypes(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
