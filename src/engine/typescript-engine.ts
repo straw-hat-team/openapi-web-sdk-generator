@@ -158,21 +158,24 @@ function fromUnknownSchemaObjectToTypeScripType(data: OpenAPIV3.SchemaObject): T
 function fromAllOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
-    output: 'any',
+    // TODO: handle Ref returns
+    output: data.map(toTypeScripType).join(' & '),
   };
 }
 
 function fromOneOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
-    output: 'any',
+    // TODO: handle Ref returns
+    output: data.map(toTypeScripType).join(' | '),
   };
 }
 
 function fromAnyOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
-    output: 'any',
+    // TODO: handle Ref returns
+    output: data.map(toTypeScripType).join(' | '),
   };
 }
 
