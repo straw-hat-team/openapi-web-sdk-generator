@@ -8,7 +8,8 @@ function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { ou
   if ('properties' in data) {
     const propertiesOutput = Object.entries(data.properties ?? {}).map((entry) => {
       const typeOutput = toTypeScripType(entry[1]);
-      return `${typeOutput.comment ?? '\n'}${entry[0]}: ${typeOutput.output}`;
+      const optionalFlag = (data.required ?? []).includes(entry[0]) ? '' : '?';
+      return `${typeOutput.comment ?? '\n'}${entry[0]}${optionalFlag}: ${typeOutput.output}`;
     });
 
     typeOutput.push(`{ ${propertiesOutput.join(';\n')} }`);
