@@ -34,12 +34,16 @@ function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject)
 function createDocs(data: OpenAPIV3.SchemaObject) {
   const docs = ['/**'];
 
-  if (data.description) {
-    docs.push(`* ${data.description}`);
+  if (data.format) {
+    docs.push(`* @openapiformatof ${data.format}`);
   }
 
   if (data.deprecated) {
     docs.push('* @deprecated');
+  }
+
+  if (data.default) {
+    docs.push(`* @default ${data.default}`);
   }
 
   if (data.externalDocs) {
