@@ -36,8 +36,16 @@ function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject)
 function createDocs(data: OpenAPIV3.SchemaObject) {
   const docs = ['/**'];
 
-  if (data.format) {
-    docs.push(`* @openapiformatof ${data.format}`);
+  if (data.title) {
+    docs.push(`* ${data.title}`);
+  }
+
+  if (data.description) {
+    docs.push(`* ${data.description}`);
+  }
+
+  if (data.externalDocs) {
+    docs.push(`* ${data.externalDocs.description}: ${data.externalDocs.url}`);
   }
 
   if (data.deprecated) {
@@ -48,16 +56,68 @@ function createDocs(data: OpenAPIV3.SchemaObject) {
     docs.push(`* @default ${data.default}`);
   }
 
-  if (data.externalDocs) {
-    docs.push(`* ${data.externalDocs.description}: ${data.externalDocs.url}`);
+  if (data.format) {
+    docs.push(`* @format ${data.format}`);
   }
 
   if (data.readOnly) {
-    docs.push('* @openapireadonly');
+    docs.push('* @readonly');
   }
 
   if (data.writeOnly) {
-    docs.push('* @openapiwriteonly');
+    docs.push('* @writeonly');
+  }
+
+  if (data.multipleOf) {
+    docs.push(`* @multipleOf ${data.multipleOf}`);
+  }
+
+  if (data.maximum) {
+    docs.push(`* @maximum ${data.maximum}`);
+  }
+
+  if (data.exclusiveMaximum) {
+    docs.push(`* @exclusiveMaximum ${data.exclusiveMaximum}`);
+  }
+
+  if (data.minimum) {
+    docs.push(`* @minimum ${data.minimum}`);
+  }
+
+  if (data.exclusiveMinimum) {
+    docs.push(`* @exclusiveMinimum ${data.exclusiveMinimum}`);
+  }
+
+  if (data.maxLength) {
+    docs.push(`* @maxLength ${data.maxLength}`);
+  }
+
+  if (data.minLength) {
+    docs.push(`* @minLength ${data.minLength}`);
+  }
+
+  if (data.pattern) {
+    docs.push(`* @pattern ${data.pattern}`);
+  }
+
+  if (data.maxItems) {
+    docs.push(`* @maxItems ${data.maxItems}`);
+  }
+
+  if (data.minItems) {
+    docs.push(`* @minItems ${data.minItems}`);
+  }
+
+  if (data.uniqueItems) {
+    docs.push(`* @uniqueItems ${data.uniqueItems}`);
+  }
+
+  if (data.maxProperties) {
+    docs.push(`* @maxProperties ${data.maxProperties}`);
+  }
+
+  if (data.minProperties) {
+    docs.push(`* @minProperties ${data.minProperties}`);
   }
 
   docs.push('*/');
