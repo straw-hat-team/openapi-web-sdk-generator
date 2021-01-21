@@ -1,7 +1,7 @@
 import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
 import { OpenAPIV3 } from 'openapi-types';
-import { ImportsCache } from '../imports-cache';
+import { ImportsCache } from './imports-cache';
 
 type TypeScriptType = {
   output: string;
