@@ -21,7 +21,14 @@ export class FetcherCodegen extends CodegenBase {
   }
 
   afterAll(_args: { document: OpenAPIV3.Document }) {
-    // importsCache;
+    const importsOutput = Array.from(this.importsCache)
+      .map((importModule) => {
+        return `import * as ${importModule} from "./${importModule}";`;
+      })
+      .concat('\n')
+      .join('\n');
+
+    this.toolkit.outputDir.prependFileSync('components/schemas.ts', importsOutput);
   }
 
   generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
