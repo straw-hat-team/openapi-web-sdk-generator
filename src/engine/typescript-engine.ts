@@ -24,10 +24,12 @@ function toTypeScripType(data: OpenAPIV3Schema) {
   }
 
   if (data.type === 'array') {
+    // TODO: Fix array type
     return 'Array<any>';
   }
 
   if (data.type === 'object') {
+    // TODO: Fix object type
     return 'any';
   }
 
