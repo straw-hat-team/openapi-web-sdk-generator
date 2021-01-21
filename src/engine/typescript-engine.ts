@@ -2,6 +2,10 @@ import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
 import { OpenAPIV3 } from 'openapi-types';
 
+function asString(value: any) {
+  return `"${value}"`;
+}
+
 function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; comment?: string } {
   const typeOutput: string[] = [];
 
@@ -16,6 +20,20 @@ function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { ou
   }
 
   return { output: typeOutput.join('') };
+}
+
+function fromStringSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; comment?: string } {
+  const description = data.description ?? '';
+  const output = data.enum === undefined ? 'string' : data.enum.map(asString).join('|');
+
+  return {
+    output: output,
+    comment: `
+      /**
+      * ${description}
+      */
+    `,
+  };
 }
 
 function toTypeScripType(data: OpenAPIV3Schema): { output: string; comment?: string } {
@@ -39,7 +57,7 @@ function toTypeScripType(data: OpenAPIV3Schema): { output: string; comment?: str
   }
 
   if (data.type === 'string') {
-    return { output: 'string' };
+    return fromStringSchemaObjectToTypeScripType(data);
   }
 
   if (data.type === 'integer') {
