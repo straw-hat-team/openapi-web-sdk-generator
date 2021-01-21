@@ -2,8 +2,9 @@ import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
 import { OpenAPIV3 } from 'openapi-types';
 
+class ImportTypes extends Set<string> {}
+
 type TypeScriptType = {
-  importModule?: string;
   output: string;
   docs: string;
 };
@@ -15,14 +16,14 @@ function asString(value: any) {
   return `"${value}"`;
 }
 
-function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
+function fromSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
   const typeOutput: string[] = [];
 
   // TODO: handle additionalProperties key
 
   if ('properties' in data) {
     const propertiesOutput = Object.entries(data.properties ?? {}).map((entry) => {
-      const typeOutput = toTypeScripType(entry[1]);
+      const typeOutput = toTypeScripType(importsCache, entry[1]);
       const optionalFlag = (data.required ?? []).includes(entry[0]) ? '' : '?';
       return `${typeOutput.docs} \n ${entry[0]}${optionalFlag}: ${typeOutput.output}`;
     });
@@ -159,32 +160,35 @@ function fromUnknownSchemaObjectToTypeScripType(data: OpenAPIV3.SchemaObject): T
   };
 }
 
-function fromAllOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
+function fromAllOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
     // TODO: handle Ref returns
-    output: data.map(toTypeScripType).join(' & '),
+    output: data.map((data) => toTypeScripType(importsCache, data)).join(' & '),
   };
 }
 
-function fromOneOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
+function fromOneOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
     // TODO: handle Ref returns
-    output: data.map(toTypeScripType).join(' | '),
+    output: data.map((data) => toTypeScripType(importsCache, data)).join(' | '),
   };
 }
 
-function fromAnyOfSchemaObjectToTypeScripType(data: OpenAPIV3Schema[]): TypeScriptType {
+function fromAnyOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
     // TODO: handle Ref returns
-    output: data.map(toTypeScripType).join(' | '),
+    output: data.map((data) => toTypeScripType(importsCache, data)).join(' | '),
   };
 }
 
-function fromArraySchemaObjectToTypeScripType(data: OpenAPIV3.ArraySchemaObject): TypeScriptType {
-  const type = toTypeScripType(data.items);
+function fromArraySchemaObjectToTypeScripType(
+  importsCache: ImportTypes,
+  data: OpenAPIV3.ArraySchemaObject
+): TypeScriptType {
+  const type = toTypeScripType(importsCache, data.items);
 
   return {
     docs: createDocs(data),
@@ -193,35 +197,45 @@ function fromArraySchemaObjectToTypeScripType(data: OpenAPIV3.ArraySchemaObject)
   };
 }
 
-function fromRefSchemaObjectToTypeScripType(data: OpenAPIV3.ReferenceObject): TypeScriptType {
+function fromRefSchemaObjectToTypeScripType(
+  importsCache: ImportTypes,
+  data: OpenAPIV3.ReferenceObject
+): TypeScriptType {
   const refs = data.$ref.replace('#/', '').split('/');
   const referenceModule = refs[1];
   const referenceType = refs[2];
 
+  importsCache.add(referenceModule);
+
   return {
-    importModule: referenceModule,
     docs: '',
     output: `${referenceModule}.${referenceType}`,
   };
 }
 
-function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
+function toTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema): TypeScriptType {
   if ('$ref' in data) {
-    return fromRefSchemaObjectToTypeScripType(data);
+    return fromRefSchemaObjectToTypeScripType(importsCache, data);
   }
 
-  // #/components/schemas/Category
-
   if (data.allOf) {
-    return fromAllOfSchemaObjectToTypeScripType(data.allOf);
+    return fromAllOfSchemaObjectToTypeScripType(importsCache, data.allOf);
   }
 
   if (data.oneOf) {
-    return fromOneOfSchemaObjectToTypeScripType(data.oneOf);
+    return fromOneOfSchemaObjectToTypeScripType(importsCache, data.oneOf);
   }
 
   if (data.anyOf) {
-    return fromAnyOfSchemaObjectToTypeScripType(data.anyOf);
+    return fromAnyOfSchemaObjectToTypeScripType(importsCache, data.anyOf);
+  }
+
+  if (data.type === 'array') {
+    return fromArraySchemaObjectToTypeScripType(importsCache, data);
+  }
+
+  if (data.type === 'object') {
+    return fromSchemaObjectToTypeScripType(importsCache, data);
   }
 
   if (data.type === 'boolean') {
@@ -240,22 +254,22 @@ function toTypeScripType(data: OpenAPIV3Schema): TypeScriptType {
     return fromIntegerSchemaObjectToTypeScripType(data);
   }
 
-  if (data.type === 'array') {
-    return fromArraySchemaObjectToTypeScripType(data);
-  }
-
-  if (data.type === 'object') {
-    return fromSchemaObjectToTypeScripType(data);
-  }
-
   return fromUnknownSchemaObjectToTypeScripType(data);
 }
 
 export function generateTypes(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
+  const importsCache = new ImportTypes();
+
   const normalizedSchemaName = pascalCase(args.schemaName);
-  const typeOutput = toTypeScripType(args.schemaObject);
+  const typeOutput = toTypeScripType(importsCache, args.schemaObject);
+  const importsOutput = Array.from(importsCache)
+    .map((importModule) => {
+      return `import * as ${importModule} from "./${importModule}";`;
+    })
+    .join('\n');
 
   return `
+    ${importsOutput}
     ${typeOutput.docs}
     export type ${normalizedSchemaName} = ${typeOutput.output};
   `;
