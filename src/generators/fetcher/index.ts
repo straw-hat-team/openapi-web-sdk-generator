@@ -4,7 +4,7 @@ import { CodegenBase } from '../../codegen-base';
 import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from '../../types';
 import { renderOperationExportStatement, renderOperationFileSourceCode } from './template';
 import { generateTypes } from '../../engine/typescript-engine';
-import { ImportsCache } from '../../imports-cache';
+import { ImportsCache } from '../../engine/imports-cache';
 import type { OpenAPIV3 } from 'openapi-types';
 export interface FetcherCodegenConfig {
   dirPath?: string;
