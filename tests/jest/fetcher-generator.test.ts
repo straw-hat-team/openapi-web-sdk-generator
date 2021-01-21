@@ -1,5 +1,5 @@
 import { prepareTest } from './support-files';
-import { FetcherCodegen } from '../../src/generators/fetcher';
+import { FetcherCodegen } from '../../src/generators';
 
 describe('fetcher generator', () => {
   test('generates the types.ts file', async () => {
