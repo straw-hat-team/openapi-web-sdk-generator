@@ -50,7 +50,7 @@ export class OpenApiWebSdkGenerator {
       );
     }
 
-    for (const [operationPath, pathItem] of Object.entries<PathItemObject>(this.document.paths)) {
+    for (const [operationPath, pathItem] of Object.entries<PathItemObject>(this.document.paths as any)) {
       for (const [operationMethod, operation] of Object.entries<OperationObject>(pathItem as any)) {
         if (!isOperationKey(operationMethod)) {
           continue;
