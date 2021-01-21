@@ -9,6 +9,8 @@ function asString(value: any) {
 function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject): { output: string; docs: string } {
   const typeOutput: string[] = [];
 
+  // TODO: handle additionalProperties key
+
   if ('properties' in data) {
     const propertiesOutput = Object.entries(data.properties ?? {}).map((entry) => {
       const typeOutput = toTypeScripType(entry[1]);
