@@ -1,6 +1,6 @@
 import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
-import { ArraySchemaObject, OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 type TypeScriptType = { output: string; docs: string };
 
@@ -185,7 +185,7 @@ function fromArraySchemaObjectToTypeScripType(data: OpenAPIV3.ArraySchemaObject)
   return {
     docs: createDocs(data),
     // TODO: handle Ref returns
-    output: `Array<${type}>`,
+    output: `Array<${type.output}>`,
   };
 }
 
