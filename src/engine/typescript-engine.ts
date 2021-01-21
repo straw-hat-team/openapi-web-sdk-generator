@@ -1,5 +1,20 @@
 import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
+import { OpenAPIV3 } from 'openapi-types';
+
+function fromSchemaObjectToTypeScripType(data: OpenAPIV3.BaseSchemaObject) {
+  const typeOutput: string[] = [];
+
+  if ('properties' in data) {
+    const propertiesOutput = Object.entries(data.properties ?? {}).map((entry) => {
+      return `${entry[0]}: ${toTypeScripType(entry[1])}`;
+    });
+
+    typeOutput.push(`{ ${propertiesOutput.join(';\n')} }`);
+  }
+
+  return typeOutput.join('');
+}
 
 function toTypeScripType(data: OpenAPIV3Schema) {
   if ('$ref' in data) {
@@ -29,8 +44,7 @@ function toTypeScripType(data: OpenAPIV3Schema) {
   }
 
   if (data.type === 'object') {
-    // TODO: Fix object type
-    return 'any';
+    return fromSchemaObjectToTypeScripType(data);
   }
 
   return `any /* ${data.type} is unknown */`;
