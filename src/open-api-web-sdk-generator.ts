@@ -70,5 +70,7 @@ export class OpenApiWebSdkGenerator {
         );
       }
     }
+
+    this.#perGenerator((generator) => generator.afterAll?.({ document: this.document }));
   }
 }

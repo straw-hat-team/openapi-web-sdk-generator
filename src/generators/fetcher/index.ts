@@ -4,21 +4,32 @@ import { CodegenBase } from '../../codegen-base';
 import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from '../../types';
 import { renderOperationExportStatement, renderOperationFileSourceCode } from './template';
 import { generateTypes } from '../../engine/typescript-engine';
+import { ImportsCache } from '../../imports-cache';
+import type { OpenAPIV3 } from 'openapi-types';
 export interface FetcherCodegenConfig {
   dirPath?: string;
 }
 
 export class FetcherCodegen extends CodegenBase {
   private dirPath: string;
+  private importsCache: ImportsCache;
 
   constructor(toolkit: IToolkit, args?: FetcherCodegenConfig) {
     super(toolkit);
     this.dirPath = args?.dirPath ?? '.';
+    this.importsCache = new ImportsCache();
+  }
+
+  afterAll(_args: { document: OpenAPIV3.Document }) {
+    // importsCache;
   }
 
   generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
     this.toolkit.outputDir.createDirSync('components');
-    this.toolkit.outputDir.appendFileSync('components/schemas.ts', this.toolkit.formatCode(generateTypes(args)));
+    this.toolkit.outputDir.appendFileSync(
+      'components/schemas.ts',
+      this.toolkit.formatCode(generateTypes(this.importsCache, args))
+    );
   }
 
   generateOperation(args: {

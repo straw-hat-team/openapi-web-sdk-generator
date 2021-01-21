@@ -1,8 +1,7 @@
 import { pascalCase } from 'change-case';
 import { OpenAPIV3Schema } from '../types';
 import { OpenAPIV3 } from 'openapi-types';
-
-class ImportTypes extends Set<string> {}
+import { ImportsCache } from '../imports-cache';
 
 type TypeScriptType = {
   output: string;
@@ -16,7 +15,7 @@ function asString(value: any) {
   return `"${value}"`;
 }
 
-function fromSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
+function fromSchemaObjectToTypeScripType(importsCache: ImportsCache, data: OpenAPIV3.BaseSchemaObject): TypeScriptType {
   const typeOutput: string[] = [];
 
   // TODO: handle additionalProperties key
@@ -160,7 +159,7 @@ function fromUnknownSchemaObjectToTypeScripType(data: OpenAPIV3.SchemaObject): T
   };
 }
 
-function fromAllOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema[]): TypeScriptType {
+function fromAllOfSchemaObjectToTypeScripType(importsCache: ImportsCache, data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
     // TODO: handle Ref returns
@@ -168,7 +167,7 @@ function fromAllOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: O
   };
 }
 
-function fromOneOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema[]): TypeScriptType {
+function fromOneOfSchemaObjectToTypeScripType(importsCache: ImportsCache, data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
     // TODO: handle Ref returns
@@ -176,7 +175,7 @@ function fromOneOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: O
   };
 }
 
-function fromAnyOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema[]): TypeScriptType {
+function fromAnyOfSchemaObjectToTypeScripType(importsCache: ImportsCache, data: OpenAPIV3Schema[]): TypeScriptType {
   return {
     docs: '',
     // TODO: handle Ref returns
@@ -185,7 +184,7 @@ function fromAnyOfSchemaObjectToTypeScripType(importsCache: ImportTypes, data: O
 }
 
 function fromArraySchemaObjectToTypeScripType(
-  importsCache: ImportTypes,
+  importsCache: ImportsCache,
   data: OpenAPIV3.ArraySchemaObject
 ): TypeScriptType {
   const type = toTypeScripType(importsCache, data.items);
@@ -198,7 +197,7 @@ function fromArraySchemaObjectToTypeScripType(
 }
 
 function fromRefSchemaObjectToTypeScripType(
-  importsCache: ImportTypes,
+  importsCache: ImportsCache,
   data: OpenAPIV3.ReferenceObject
 ): TypeScriptType {
   const refs = data.$ref.replace('#/', '').split('/');
@@ -213,7 +212,7 @@ function fromRefSchemaObjectToTypeScripType(
   };
 }
 
-function toTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema): TypeScriptType {
+function toTypeScripType(importsCache: ImportsCache, data: OpenAPIV3Schema): TypeScriptType {
   if ('$ref' in data) {
     return fromRefSchemaObjectToTypeScripType(importsCache, data);
   }
@@ -257,19 +256,11 @@ function toTypeScripType(importsCache: ImportTypes, data: OpenAPIV3Schema): Type
   return fromUnknownSchemaObjectToTypeScripType(data);
 }
 
-export function generateTypes(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
-  const importsCache = new ImportTypes();
-
+export function generateTypes(importsCache: ImportsCache, args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
   const normalizedSchemaName = pascalCase(args.schemaName);
   const typeOutput = toTypeScripType(importsCache, args.schemaObject);
-  const importsOutput = Array.from(importsCache)
-    .map((importModule) => {
-      return `import * as ${importModule} from "./${importModule}";`;
-    })
-    .join('\n');
 
   return `
-    ${importsOutput}
     ${typeOutput.docs}
     export type ${normalizedSchemaName} = ${typeOutput.output};
   `;
