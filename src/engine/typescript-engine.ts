@@ -1,8 +1,12 @@
-import { BaseGeneratorType } from './base-generator-type';
-//import { OpenAPIV3Schema } from '../types';
 import { pascalCase } from 'change-case';
+import { OpenAPIV3Schema } from '../types';
 
-function toTypeScripType(data: any) {
+function toTypeScripType(data: OpenAPIV3Schema) {
+  if ('$ref' in data) {
+    // TODO: Fix $ref object type
+    return 'any';
+  }
+
   if (data.type === 'integer') {
     return 'number';
   }
@@ -11,29 +15,16 @@ function toTypeScripType(data: any) {
     return 'Array<any>';
   }
 
-  return data.type;
+  if (data.type === 'object') {
+    return 'any';
+  }
+
+  return `any /* ${data.type} is unknown */`;
 }
 
-export class TypeSrcriptEngine implements BaseGeneratorType {
-  private constructor() {}
+export function generateTypes(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
+  const normalizedSchemaName = pascalCase(args.schemaName);
+  const typeOutput = toTypeScripType(args.schemaObject);
 
-  private static driller(data: any) {
-    const output: string[] = [];
-
-    Object.keys(data).forEach((key) => {
-      const type = toTypeScripType(data[key]);
-
-      output.push(`${key}: ${type}`);
-    });
-
-    return output.join(';');
-  }
-
-  public static generateTypes(args: { schemaName: string; schemaObject: any }) {
-    const normalizedSchemaName = pascalCase(args.schemaName);
-    const properties = this.driller(args.schemaObject['properties']);
-    return `export type ${normalizedSchemaName} = {
-      ${properties};
-    }`;
-  }
+  return `export type ${normalizedSchemaName} = ${typeOutput};`;
 }
