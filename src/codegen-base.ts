@@ -1,4 +1,4 @@
-import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from './types';
+import { IToolkit, OperationObject, PathItemObject } from './types';
 import type { OpenAPIV3 } from 'openapi-types';
 
 export abstract class CodegenBase {
@@ -8,14 +8,14 @@ export abstract class CodegenBase {
     this.toolkit = toolkit;
   }
 
-  abstract generateOperation?(_args: {
+  abstract onBeforeAll(_args: { document: OpenAPIV3.Document }): void;
+
+  abstract onGenerateOperation?(_args: {
     operationMethod: string;
     operationPath: string;
     pathItem: PathItemObject;
     operation: OperationObject;
-  }): any;
+  }): void;
 
-  abstract afterAll?(_args: { document: OpenAPIV3.Document }): any;
-
-  abstract generateSchema?(_args: { schemaName: string; schemaObject: OpenAPIV3Schema }): any;
+  abstract onAfterAll(_args: { document: OpenAPIV3.Document }): void;
 }

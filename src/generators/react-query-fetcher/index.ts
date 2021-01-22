@@ -7,6 +7,7 @@ import {
   renderQueryOperationSourceCode,
   renderOperationExportStatement,
 } from './template';
+import type { OpenAPIV3 } from 'openapi-types';
 
 function isQuery(operationMethod: string) {
   return ['GET'].includes(operationMethod.toUpperCase());
@@ -27,9 +28,10 @@ export class ReactQueryFetcherCodegen extends CodegenBase {
     this.importPath = args.importPath;
   }
 
-  generateSchema = undefined;
+  onBeforeAll(_args: { document: OpenAPIV3.Document }) {}
+  onAfterAll(_args: { document: OpenAPIV3.Document }) {}
 
-  generateOperation(args: {
+  onGenerateOperation(args: {
     operationMethod: string;
     operationPath: string;
     pathItem: PathItemObject;

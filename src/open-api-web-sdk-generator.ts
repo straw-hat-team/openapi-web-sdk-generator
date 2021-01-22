@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from 'openapi-types';
 import { OutputDir } from './output-dir';
-import { OperationObject, PathItemObject, OpenAPIV3Schemas, OpenAPIV3Schema } from './types';
+import { OperationObject, PathItemObject } from './types';
 import { hasOperationId, isOperationKey } from './helpers';
 import { CodegenBase } from './codegen-base';
 import * as prettier from './prettier';
@@ -39,16 +39,7 @@ export class OpenApiWebSdkGenerator {
   async generate() {
     this.outputDir.resetDir();
 
-    const schemas: OpenAPIV3Schemas = this.document.components?.schemas ?? {};
-
-    for (const [schemaName, schemaObject] of Object.entries<OpenAPIV3Schema>(schemas)) {
-      this.#perGenerator((generator) =>
-        generator.generateSchema?.({
-          schemaName,
-          schemaObject,
-        })
-      );
-    }
+    this.#perGenerator((generator) => generator.onBeforeAll({ document: this.document }));
 
     for (const [operationPath, pathItem] of Object.entries<PathItemObject>(this.document.paths as any)) {
       for (const [operationMethod, operation] of Object.entries<OperationObject>(pathItem as any)) {
@@ -61,7 +52,7 @@ export class OpenApiWebSdkGenerator {
         }
 
         this.#perGenerator((generator) =>
-          generator.generateOperation?.({
+          generator.onGenerateOperation?.({
             operation,
             operationPath,
             operationMethod,
@@ -71,6 +62,6 @@ export class OpenApiWebSdkGenerator {
       }
     }
 
-    this.#perGenerator((generator) => generator.afterAll?.({ document: this.document }));
+    this.#perGenerator((generator) => generator.onAfterAll({ document: this.document }));
   }
 }

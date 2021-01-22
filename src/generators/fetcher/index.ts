@@ -20,7 +20,20 @@ export class FetcherCodegen extends CodegenBase {
     this.importsCache = new ImportsCache();
   }
 
-  afterAll(_args: { document: OpenAPIV3.Document }) {
+  onBeforeAll(args: { document: OpenAPIV3.Document }) {
+    this.toolkit.outputDir.createDirSync('components');
+
+    const schemas = args.document.components?.schemas ?? {};
+
+    for (const [schemaName, schemaObject] of Object.entries<OpenAPIV3Schema>(schemas)) {
+      this.toolkit.outputDir.appendFileSync(
+        'components/schemas.ts',
+        this.toolkit.formatCode(generateTypes(this.importsCache, { schemaObject, schemaName }))
+      );
+    }
+  }
+
+  onAfterAll(_args: { document: OpenAPIV3.Document }) {
     const importsOutput = Array.from(this.importsCache)
       .map((importModule) => {
         return `import * as ${importModule} from "./${importModule}";`;
@@ -31,15 +44,7 @@ export class FetcherCodegen extends CodegenBase {
     this.toolkit.outputDir.prependFileSync('components/schemas.ts', importsOutput);
   }
 
-  generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
-    this.toolkit.outputDir.createDirSync('components');
-    this.toolkit.outputDir.appendFileSync(
-      'components/schemas.ts',
-      this.toolkit.formatCode(generateTypes(this.importsCache, args))
-    );
-  }
-
-  generateOperation(args: {
+  onGenerateOperation(args: {
     operationMethod: string;
     operationPath: string;
     pathItem: PathItemObject;
