@@ -10,7 +10,7 @@ export type Use<%= pascalFunctionName %> = UseFetcherQueryArgs<
   any
 >;
 
-export function use<%= pascalFunctionName %>QueryKey(params: unknown) {
+export function use<%= pascalFunctionName %>QueryKey(params?: unknown) {
   return createQueryKey(QUERY_KEY, params);
 }
 
