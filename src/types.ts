@@ -19,6 +19,10 @@ export interface IToolkit {
 
 export type OpenAPIV3Schema = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject;
 
+export type OpenAPIV3Response = OpenAPIV3.ReferenceObject | OpenAPIV3.ResponseObject;
+
+export type OpenAPIV3RequestBody = OpenAPIV3.ReferenceObject | OpenAPIV3.RequestBodyObject;
+
 export type OpenAPIV3Schemas = {
   [key: string]: OpenAPIV3Schema;
 };
