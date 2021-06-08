@@ -24,7 +24,9 @@ module.exports = (toolkit) => {
   // Use toolkit.addGenerator to add generators
   
   // Generates operations for @straw-hat/fetcher package
-  toolkit.addGenerator(new FetcherCodegen(toolkit));
+  toolkit.addGenerator(new FetcherCodegen({
+    outputDir: './operations'  
+  }));
 };
 ```
 
@@ -32,8 +34,7 @@ Run the generator command.
 
 ```bash
 sht-openapi-web-sdk-generator local \
-  --config='./data/openapi.json' \
-  --output='./src/operations'
+  --config='./data/openapi.json'
 ```
 
 <!-- commands -->

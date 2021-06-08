@@ -2,7 +2,7 @@ import EJS from 'ejs';
 import fs from 'fs';
 import { FancyMap } from '@straw-hat/fancy-map';
 import { Dir } from './dir';
-import { createDebugger } from './debug';
+import { createDebugger } from "./helpers";
 
 export class TemplateDir extends Dir {
   protected debug = createDebugger('template-dir');

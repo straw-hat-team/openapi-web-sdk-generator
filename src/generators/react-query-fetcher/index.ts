@@ -1,56 +1,80 @@
-import { getOperationDirectory, getOperationFilePath } from '../../helpers';
-import * as path from 'path';
 import { CodegenBase } from '../../codegen-base';
-import { IToolkit, OperationObject, PathItemObject } from '../../types';
-import {
-  renderMutationOperationSourceCode,
-  renderQueryOperationSourceCode,
-  renderOperationExportStatement,
-} from './template';
+import { OperationObject, PathItemObject } from '../../types';
+import { ensureOperationId, forEachHttpOperation, getOperationDirectory, getOperationFilePath } from '../../helpers';
+import path from 'path';
+import { OutputDir } from '../../output-dir';
+import { TemplateDir } from '../../template-dir';
+import { camelCase, pascalCase } from 'change-case';
+import { OpenAPIV3 } from 'openapi-types';
+
+const templateDir = new TemplateDir(
+  path.join(__dirname, '..', '..', '..', 'templates', 'generators', 'react-query-fetcher')
+);
 
 function isQuery(operationMethod: string) {
-  return ['GET'].includes(operationMethod.toUpperCase());
+  return OpenAPIV3.HttpMethods.GET.toUpperCase() == operationMethod.toUpperCase();
 }
 
-export interface ReactQueryFetcherCodegenConfig {
-  dirPath?: string;
-  importPath: string;
+export interface ReactQueryFetcherCodegenOptions {
+  outputDir: string;
+  packageName: string;
 }
 
-export class ReactQueryFetcherCodegen extends CodegenBase {
-  private dirPath: string;
-  private importPath: string;
+export class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetcherCodegenOptions> {
+  private readonly packageName: string;
+  readonly #outputDir: OutputDir;
 
-  constructor(toolkit: IToolkit, args: ReactQueryFetcherCodegenConfig) {
-    super(toolkit);
-    this.dirPath = args.dirPath ?? '.';
-    this.importPath = args.importPath;
+  constructor(opts: ReactQueryFetcherCodegenOptions) {
+    super(opts);
+    this.#outputDir = new OutputDir(this.config.outputDir);
+    this.packageName = opts.packageName;
   }
 
-  generateSchema = undefined;
-
-  generateOperation(args: {
+  #processOperation = (args: {
     operationMethod: string;
     operationPath: string;
     pathItem: PathItemObject;
     operation: OperationObject;
-  }) {
-    const indexFilePath = path.join(this.dirPath, 'index');
-    const operationDirPath = path.join(this.dirPath, getOperationDirectory(args.pathItem, args.operation));
-    const operationFilePath = getOperationFilePath(operationDirPath, args.operation);
-    const operationExportPath = path.relative(this.dirPath, operationFilePath);
+  }) => {
+    ensureOperationId(args);
 
-    this.toolkit.outputDir.createDirSync(operationDirPath);
+    const operationDirPath = getOperationDirectory(args.pathItem, args.operation);
+    const operationFilePath = getOperationFilePath(operationDirPath, args.operation);
+    const operationIndexImportPath = path.relative(
+      this.#outputDir.resolveDir('index.ts'),
+      this.#outputDir.resolve(operationFilePath)
+    );
+
+    this.#outputDir.createDirSync(operationDirPath);
 
     const sourceCode = isQuery(args.operationMethod)
-      ? renderQueryOperationSourceCode({ operation: args.operation, importPath: this.importPath })
-      : renderMutationOperationSourceCode({ operation: args.operation, importPath: this.importPath });
+      ? templateDir.render('query-operation.ts.ejs', {
+          functionName: camelCase(args.operation.operationId),
+          pascalFunctionName: pascalCase(args.operation.operationId),
+          importPath: this.packageName,
+        })
+      : templateDir.render('mutation-operation.ts.ejs', {
+          functionName: camelCase(args.operation.operationId),
+          pascalFunctionName: pascalCase(args.operation.operationId),
+          importPath: this.packageName,
+        });
 
-    this.toolkit.outputDir.writeFileSync(`${operationFilePath}.ts`, this.toolkit.formatCode(sourceCode));
+    this.#outputDir.writeFileSync(`use-${operationFilePath}.ts`, sourceCode);
+    this.#outputDir.formatSync(`use-${operationFilePath}.ts`);
 
-    this.toolkit.outputDir.appendFileSync(
-      `${indexFilePath}.ts`,
-      renderOperationExportStatement({ operationExportPath: operationExportPath })
+    this.#outputDir.appendFileSync(
+      'index.ts',
+      templateDir.render('index-export-statement.ts.ejs', {
+        operationImportPath: operationIndexImportPath,
+      })
     );
+  };
+
+  async generate() {
+    this.#outputDir.resetDir();
+
+    forEachHttpOperation(this.document, this.#processOperation);
+
+    this.#outputDir.formatSync('index.ts');
   }
 }

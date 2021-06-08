@@ -1,18 +1,21 @@
-import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from './types';
+import { OpenAPIV3 } from 'openapi-types';
 
-export abstract class CodegenBase {
-  toolkit: IToolkit;
+export abstract class CodegenBase<Config = unknown> {
+  #document: OpenAPIV3.Document | undefined = undefined;
+  readonly config: Config;
 
-  constructor(toolkit: IToolkit) {
-    this.toolkit = toolkit;
+  protected constructor(opts: Config) {
+    this.config = opts;
   }
 
-  abstract generateOperation?(_args: {
-    operationMethod: string;
-    operationPath: string;
-    pathItem: PathItemObject;
-    operation: OperationObject;
-  }): any;
+  get document(): OpenAPIV3.Document {
+    return this.#document!;
+  }
 
-  abstract generateSchema?(_args: { schemaName: string; schemaObject: OpenAPIV3Schema }): any;
+  setDocument(document: OpenAPIV3.Document) {
+    this.#document = document;
+    return this;
+  }
+
+  abstract generate(): Promise<void>;
 }

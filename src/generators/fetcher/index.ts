@@ -1,48 +1,79 @@
-import { getOperationDirectory, getOperationFilePath } from '../../helpers';
 import * as path from 'path';
+import { ensureOperationId, forEachHttpOperation, getOperationDirectory, getOperationFilePath } from '../../helpers';
 import { CodegenBase } from '../../codegen-base';
-import { pascalCase } from 'change-case';
-import { IToolkit, OperationObject, PathItemObject, OpenAPIV3Schema } from '../../types';
-import { renderOperationExportStatement, renderOperationFileSourceCode } from './template';
+import { camelCase, pascalCase } from 'change-case';
+import { OpenAPIV3Schema, OperationObject, PathItemObject } from '../../types';
+import { OutputDir } from '../../output-dir';
+import { TemplateDir } from '../../template-dir';
 
-export interface FetcherCodegenConfig {
-  dirPath?: string;
+const templateDir = new TemplateDir(path.join(__dirname, '..', '..', '..', 'templates', 'generators', 'fetcher'));
+
+export interface FetcherCodegenOptions {
+  outputDir: string;
 }
 
-export class FetcherCodegen extends CodegenBase {
-  private dirPath: string;
+export class FetcherCodegen extends CodegenBase<FetcherCodegenOptions> {
+  readonly #outputDir: OutputDir;
 
-  constructor(toolkit: IToolkit, args?: FetcherCodegenConfig) {
-    super(toolkit);
-    this.dirPath = args?.dirPath ?? '.';
+  constructor(opts: FetcherCodegenOptions) {
+    super(opts);
+    this.#outputDir = new OutputDir(this.config.outputDir);
   }
 
-  generateSchema(args: { schemaName: string; schemaObject: OpenAPIV3Schema }) {
+  #processSchema = (args: { schemaName: string; schemaObject: OpenAPIV3Schema }) => {
     const normalizedSchemaName = pascalCase(args.schemaName);
-    this.toolkit.outputDir.appendFileSync(`types.ts`, `type ${normalizedSchemaName} = any;\n`);
-  }
+    this.#outputDir.appendFileSync(`components/schemas.ts`, `type ${normalizedSchemaName} = any;\n`);
+  };
 
-  generateOperation(args: {
+  #processOperation = (args: {
     operationMethod: string;
     operationPath: string;
     pathItem: PathItemObject;
     operation: OperationObject;
-  }) {
-    const indexFilePath = path.join(this.dirPath, 'index');
-    const operationDirPath = path.join(this.dirPath, getOperationDirectory(args.pathItem, args.operation));
+  }) => {
+    ensureOperationId(args);
+
+    const operationDirPath = getOperationDirectory(args.pathItem, args.operation);
     const operationFilePath = getOperationFilePath(operationDirPath, args.operation);
-    const operationExportPath = path.relative(this.dirPath, operationFilePath);
+    const functionName = camelCase(args.operation.operationId);
+    const typePrefix = pascalCase(args.operation.operationId);
+    const operationIndexImportPath = path.relative(
+      this.#outputDir.resolveDir('index.ts'),
+      this.#outputDir.resolve(operationFilePath)
+    );
 
-    this.toolkit.outputDir.createDirSync(operationDirPath);
+    this.#outputDir.createDirSync(operationDirPath);
 
-    this.toolkit.outputDir.writeFileSync(
+    this.#outputDir.writeFileSync(
       `${operationFilePath}.ts`,
-      this.toolkit.formatCode(renderOperationFileSourceCode(args))
+      templateDir.render('operation.ts.ejs', {
+        functionName,
+        typePrefix,
+        operationMethod: args.operationMethod.toUpperCase(),
+        operationPath: args.operationPath,
+      })
     );
 
-    this.toolkit.outputDir.appendFileSync(
-      `${indexFilePath}.ts`,
-      renderOperationExportStatement({ operationExportPath: operationExportPath })
+    this.#outputDir.formatSync(`${operationFilePath}.ts`);
+
+    this.#outputDir.appendFileSync(
+      'index.ts',
+      templateDir.render('index-export-statement.ts.ejs', {
+        operationImportPath: operationIndexImportPath,
+      })
     );
+  };
+
+  async generate() {
+    this.#outputDir.resetDir();
+    this.#outputDir.createDirSync('components');
+
+    for (const [schemaName, schemaObject] of Object.entries<OpenAPIV3Schema>(this.document.components?.schemas ?? {})) {
+      this.#processSchema({ schemaName, schemaObject });
+    }
+
+    forEachHttpOperation(this.document, this.#processOperation);
+
+    this.#outputDir.formatSync('index.ts');
   }
 }

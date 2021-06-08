@@ -1,24 +1,14 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { OutputDir } from './output-dir';
-import { CodegenBase } from './codegen-base';
 
 export interface OperationObject extends OpenAPIV3.OperationObject {
   'x-directories'?: string[];
   operationId: string;
 }
 
-export interface PathItemObject extends OpenAPIV3.PathItemObject {
+// Remove when the following PR is in production
+// https://github.com/kogosoftwarellc/open-api/pull/748
+export interface PathItemObject extends OpenAPIV3.PathItemObject<OperationObject> {
   'x-directories'?: string[];
 }
 
-export interface IToolkit {
-  outputDir: OutputDir;
-  formatCode(sourceCode: string): string;
-  addGenerator(generator: CodegenBase): IToolkit;
-}
-
 export type OpenAPIV3Schema = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject;
-
-export type OpenAPIV3Schemas = {
-  [key: string]: OpenAPIV3Schema;
-};

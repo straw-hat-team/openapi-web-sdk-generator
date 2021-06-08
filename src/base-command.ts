@@ -1,8 +1,8 @@
 import { Command } from '@oclif/command';
 import { loadConfig } from './helpers';
-import { IToolkit } from './types';
+import { OpenApiWebSdkGenerator } from './open-api-web-sdk-generator';
 
-export type ConfigFactory = (api: IToolkit) => void;
+export type ConfigFactory = (api: OpenApiWebSdkGenerator) => void;
 
 const DEFAULT_CONFIG_FACTORY = Function.prototype as ConfigFactory;
 

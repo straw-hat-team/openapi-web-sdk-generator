@@ -3,12 +3,14 @@ import { paramCase } from 'change-case';
 import * as path from 'path';
 import { OpenAPIV3 } from 'openapi-types';
 import * as fs from 'fs';
-import { createDebugger } from '../debug';
+import debugFactory from 'debug';
+import { OperationIdMissingError } from '../operation-id-missing-error';
 
 const debug = createDebugger('helpers');
 
-export function isOperationKey(key: string) {
-  return ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(key);
+export function createDebugger(...scope: string[]) {
+  const namespace = ['@straw-hat/openapi-web-sdk-generator', ...scope].join(':');
+  return debugFactory(namespace);
 }
 
 export function hasOperationId(operation: OperationObject) {
@@ -16,7 +18,7 @@ export function hasOperationId(operation: OperationObject) {
 }
 
 export function normalizeFileName(fileName: string) {
-  return paramCase(fileName.toLowerCase());
+  return paramCase(fileName).toLowerCase();
 }
 
 export function getOperationDirectory(pathItem: PathItemObject, operation: OperationObject) {
@@ -57,5 +59,37 @@ export function loadConfig() {
     return require(filePath);
   } catch (e) {
     throw new Error(`Failed to load configuration file ${filePath}.\n${e.message}`);
+  }
+}
+
+export function forEachHttpOperation(
+  document: OpenAPIV3.Document,
+  callback: (args: {
+    operationMethod: string;
+    operationPath: string;
+    pathItem: PathItemObject;
+    operation: OperationObject;
+  }) => any
+) {
+  for (const [operationPath, pathItem] of Object.entries<PathItemObject>(document.paths as any)) {
+    for (const operationMethod of Object.values(OpenAPIV3.HttpMethods)) {
+      const operation = pathItem[operationMethod];
+
+      if (!operation) {
+        continue;
+      }
+
+      callback({ operation, operationPath, operationMethod, pathItem });
+    }
+  }
+}
+
+export function ensureOperationId(args: {
+  operationMethod: string;
+  operationPath: string;
+  operation: OperationObject;
+}) {
+  if (!hasOperationId(args.operation)) {
+    throw new OperationIdMissingError(args.operationPath, args.operationMethod);
   }
 }

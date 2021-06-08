@@ -15,7 +15,6 @@ USAGE
 
 OPTIONS
   --config=config  (required) OpenAPI V3 configuration file.
-  --output=output  (required) Output directory path of the codegen.
 ```
 
 _See code: [dist/commands/local.ts](https://github.com/straw-hat-team/openapi-web-sdk-generator/blob/v1.1.2/dist/commands/local.ts)_

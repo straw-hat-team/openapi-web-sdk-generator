@@ -1,33 +1,64 @@
 # Custom generators
 
 You could create your own generator. A generator extends from `CodeGenBase`
-object, and you will have to define some callbacks:
+object, and you will have to define some callback:
 
 ```typescript
 const path = require('path');
 const { TemplateDir } = require('@straw-hat/openapi-web-sdk-generator/dist/template-dir');
 const { CodegenBase } = require('@straw-hat/openapi-web-sdk-generator/dist/codegen-base');
+const { ensureOperationId, getOperationDirectory } = require('@straw-hat/openapi-web-sdk-generator/dist/helpers');
 
 // Define some template directory somewhere
 const templateDir = new TemplateDir(path.join(__dirname, '..', 'templates'));
 
+export interface MyCodegenOptions {
+  outputDir: string;
+}
+
 class MyCodegen extends CodegenBase {
-  // You must override this callback
-  generateOperation(args) {
-    // Create some directories
-    this.toolkit.outputDir.createDirSync('...');
-    
-    // Use template dir to render some files using EJS template engine
-    const sourceCode = templateDir.render('my-file.ts.ejs', {
-      functionName: args.operation.operationId,
-    });
-  
-    // Format the code using prettier
-    const formattedSourceCode = this.toolkit.formatCode(sourceCode);
-    
-    // Write to disk
-    this.toolkit.outputDir.writeFileSync('.../my-file.ts', formattedSourceCode);
+  readonly #outputDir: OutputDir;
+
+  // Take some configurations for your codegen
+  constructor(opts: MyCodegenOptions) {
+    super(opts);
+    this.#outputDir = new OutputDir(this.config.outputDir);
   }
+  
+  // You must override this callback
+  async generate() {
+    this.#outputDir.resetDir();
+    this.#outputDir.createDirSync('components');
+
+    // You can use this helper function to make it simple to process operations
+    forEachHttpOperation(this.document, this.#processOperation);
+
+    // Format the code using prettier 
+    this.#outputDir.formatSync('...');
+  }
+
+  #processOperation = (args: {
+    operationMethod: string;
+    operationPath: string;
+    pathItem: PathItemObject;
+    operation: OperationObject;
+  }) => {
+    // Enforce Operation ID
+    ensureOperationId(args);
+    
+    const functionName = camelCase(args.operation.operationId);
+
+    // Render some template
+    this.#outputDir.writeFileSync(
+      `${operationFilePath}.ts`,
+      templateDir.render('operation.ts.ejs', {
+        functionName,
+      })
+    );
+
+    // Format the code using prettier
+    this.#outputDir.formatSync(`${operationFilePath}.ts`);
+  };
 }
 
 module.exports = { MyCodegen };

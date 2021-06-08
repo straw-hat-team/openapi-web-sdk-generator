@@ -2,11 +2,13 @@ import del from 'del';
 import fs from 'fs';
 import makeDir from 'make-dir';
 import path from 'path';
-import { createDebugger } from './debug';
+import { createDebugger } from './helpers';
+import prettier from 'prettier';
+import prettierConfig from '@straw-hat/prettier-config';
 
 export class Dir {
   protected debug = createDebugger('dir');
-  private path: string;
+  readonly path: string;
 
   constructor(thePath: string) {
     this.path = thePath;
@@ -27,10 +29,29 @@ export class Dir {
     return path.resolve(this.path, ...pathsSegments);
   }
 
+  resolveDir(...pathsSegments: string[]) {
+    return path.dirname(this.resolve(...pathsSegments));
+  }
+
   createDirSync(...pathsSegments: string[]) {
     const dirPath = this.resolve(...pathsSegments);
     this.debug(`Ensure directory ${dirPath}`);
     return makeDir.sync(dirPath);
+  }
+
+  readFileSync(relativePath: string) {
+    const filePath = this.resolve(relativePath);
+    return fs.readFileSync(filePath, 'utf8');
+  }
+
+  formatSync(relativePath: string) {
+    const text = this.readFileSync(relativePath);
+    const options = prettier.resolveConfig.sync(this.resolve(relativePath)) ?? prettierConfig;
+    const formatted = prettier.format(text, {
+      parser: 'typescript',
+      ...options,
+    });
+    return this.writeFileSync(relativePath, formatted);
   }
 
   writeFileSync(relativePath: string, data: any) {
