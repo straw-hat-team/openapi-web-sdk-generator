@@ -51,6 +51,7 @@
     "debug": "^4.3.1",
     "del": "^6.0.0",
     "ejs": "^3.1.6",
+    "import-from": "^4.0.0",
     "make-dir": "^3.1.0",
     "mustache": "^4.2.0",
     "openapi-types": "^9.0.3",

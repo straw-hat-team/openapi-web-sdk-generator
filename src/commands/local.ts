@@ -17,6 +17,7 @@ export default class LocalCommand extends BaseCommand {
     const { flags } = this.parse(LocalCommand);
 
     const generator = new OpenapiWebSdkGenerator({
+      context: process.cwd(),
       document: readOpenApiFile(flags.config),
       config: this.configuration,
     });

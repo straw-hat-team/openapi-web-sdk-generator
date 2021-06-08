@@ -51,6 +51,11 @@ export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
 
 export async function loadConfig(): Promise<OpenApiWebSdkGeneratorConfiguration> {
   const result = await cosmiconfigExplorer.search();
+
+  if (!result) {
+    return {};
+  }
+
   debug(`Configuration file ${result?.filepath} loaded`);
   return (result?.config as OpenApiWebSdkGeneratorConfiguration) ?? {};
 }

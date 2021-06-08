@@ -16,7 +16,7 @@ Then add the generators.
 // <rootDir>/openapi-web-sdk-generator.config.yaml
 
 generators:
-  - path: @straw-hat/openapi-web-sdk-generator/dist/generators/fetcher
+  - path: '@straw-hat/openapi-web-sdk-generator/dist/generators/fetcher'
     config:
       - outputDir: './operations'
 ```
