@@ -1,15 +1,11 @@
 import { Command } from '@oclif/command';
+import { OpenApiWebSdkGeneratorConfiguration } from './openapi-web-sdk-generator';
 import { loadConfig } from './helpers';
-import { OpenApiWebSdkGenerator } from './open-api-web-sdk-generator';
-
-export type ConfigFactory = (api: OpenApiWebSdkGenerator) => void;
-
-const DEFAULT_CONFIG_FACTORY = Function.prototype as ConfigFactory;
 
 export abstract class BaseCommand extends Command {
-  configFactory: ConfigFactory = DEFAULT_CONFIG_FACTORY;
+  configuration: OpenApiWebSdkGeneratorConfiguration = {};
 
   async init() {
-    this.configFactory = loadConfig() ?? DEFAULT_CONFIG_FACTORY;
+    this.configuration = await loadConfig();
   }
 }

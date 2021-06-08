@@ -12,12 +12,12 @@ export interface FetcherCodegenOptions {
   outputDir: string;
 }
 
-export class FetcherCodegen extends CodegenBase<FetcherCodegenOptions> {
+export default class FetcherCodegen extends CodegenBase<FetcherCodegenOptions> {
   readonly #outputDir: OutputDir;
 
   constructor(opts: FetcherCodegenOptions) {
     super(opts);
-    this.#outputDir = new OutputDir(this.config.outputDir);
+    this.#outputDir = new OutputDir(this.options.outputDir);
   }
 
   #processSchema = (args: { schemaName: string; schemaObject: OpenAPIV3Schema }) => {

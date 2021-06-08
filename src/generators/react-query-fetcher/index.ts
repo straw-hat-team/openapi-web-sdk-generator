@@ -20,13 +20,13 @@ export interface ReactQueryFetcherCodegenOptions {
   packageName: string;
 }
 
-export class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetcherCodegenOptions> {
+export default class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetcherCodegenOptions> {
   private readonly packageName: string;
   readonly #outputDir: OutputDir;
 
   constructor(opts: ReactQueryFetcherCodegenOptions) {
     super(opts);
-    this.#outputDir = new OutputDir(this.config.outputDir);
+    this.#outputDir = new OutputDir(this.options.outputDir);
     this.packageName = opts.packageName;
   }
 

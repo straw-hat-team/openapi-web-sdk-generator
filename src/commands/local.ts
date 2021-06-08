@@ -1,5 +1,5 @@
 import { flags } from '@oclif/command';
-import { OpenApiWebSdkGenerator } from '../open-api-web-sdk-generator';
+import { OpenapiWebSdkGenerator } from '../openapi-web-sdk-generator';
 import { readOpenApiFile } from '../helpers';
 import { BaseCommand } from '../base-command';
 
@@ -16,12 +16,12 @@ export default class LocalCommand extends BaseCommand {
   async run() {
     const { flags } = this.parse(LocalCommand);
 
-    const generator = new OpenApiWebSdkGenerator({
+    const generator = new OpenapiWebSdkGenerator({
       document: readOpenApiFile(flags.config),
+      config: this.configuration,
     });
 
-    this.configFactory(generator);
-
+    await generator.loadGenerators();
     await generator.generate();
   }
 }

@@ -16,10 +16,10 @@ export interface MyCodegenOptions {
   outputDir: string;
 }
 
-class MyCodegen extends CodegenBase {
+class MyCodegen extends CodegenBase<MyCodegenOptions> {
   readonly #outputDir: OutputDir;
 
-  // Take some configurations for your codegen
+  // The constructor must take one-parameter with the configuration object
   constructor(opts: MyCodegenOptions) {
     super(opts);
     this.#outputDir = new OutputDir(this.config.outputDir);
@@ -61,5 +61,6 @@ class MyCodegen extends CodegenBase {
   };
 }
 
-module.exports = { MyCodegen };
+// Super important, it must be a default export
+module.exports = MyCodegen;
 ```

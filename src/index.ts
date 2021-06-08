@@ -1,1 +1,1 @@
-export * from './open-api-web-sdk-generator';
+export * from './openapi-web-sdk-generator';

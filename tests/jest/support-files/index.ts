@@ -1,5 +1,5 @@
 import path from 'path';
-import { OpenApiWebSdkGenerator } from '../../../src/open-api-web-sdk-generator';
+import { OpenapiWebSdkGenerator } from '../../../src/openapi-web-sdk-generator';
 import { readOpenApiFile } from '../../../src/helpers';
 import { TmpDir } from './tmp-dir';
 
@@ -8,11 +8,11 @@ const PET_STORE_FILE_PATH = path.resolve(__dirname, 'pet-store.json');
 
 export function prepareTest(
   dirPath: string[],
-  callback: (args: { tmpDir: TmpDir; generator: OpenApiWebSdkGenerator }) => void
+  callback: (args: { tmpDir: TmpDir; generator: OpenapiWebSdkGenerator }) => void
 ) {
   const outputPath = path.resolve(TMP_BASE_DIR, ...dirPath);
   const tmpDir = new TmpDir(outputPath);
-  const generator = new OpenApiWebSdkGenerator({
+  const generator = new OpenapiWebSdkGenerator({
     document: readOpenApiFile(PET_STORE_FILE_PATH),
     paths: {
       outputDir: outputPath,

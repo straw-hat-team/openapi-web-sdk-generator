@@ -1,11 +1,11 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-export abstract class CodegenBase<Config = unknown> {
+export abstract class CodegenBase<Options = unknown> {
   #document: OpenAPIV3.Document | undefined = undefined;
-  readonly config: Config;
+  options: Options;
 
-  protected constructor(opts: Config) {
-    this.config = opts;
+  protected constructor(opts: Options) {
+    this.options = opts;
   }
 
   get document(): OpenAPIV3.Document {

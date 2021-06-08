@@ -3,31 +3,22 @@
 ## Usage
 
 Before anything, we need to enable the generators, to do that we will create a
-file in the package root directory called `openapi-web-sdk-generator.config.js`.
+file in the package root directory following [cosmiconfig](https://www.npmjs.com/package/cosmiconfig)
+configuration.
 
 ```bash 
-touch openapi-web-sdk-generator.config.js
+touch openapi-web-sdk-generator.config.yaml
 ```
 
 Then add the generators.
 
-```js
-// <rootDir>/openapi-web-sdk-generator.config.js
+```yaml
+// <rootDir>/openapi-web-sdk-generator.config.yaml
 
-const {
-  ReactQueryFetcherCodegen,
-  FetcherCodegen,
-} = require('@straw-hat/openapi-web-sdk-generator/dist/generators');
-
-// Make sure to export a function like the following one
-module.exports = (toolkit) => {
-  // Use toolkit.addGenerator to add generators
-  
-  // Generates operations for @straw-hat/fetcher package
-  toolkit.addGenerator(new FetcherCodegen({
-    outputDir: './operations'  
-  }));
-};
+generators:
+  - path: @straw-hat/openapi-web-sdk-generator/dist/generators/fetcher
+    config:
+      - outputDir: './operations'
 ```
 
 Run the generator command.

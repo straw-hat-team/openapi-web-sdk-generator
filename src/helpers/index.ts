@@ -5,7 +5,10 @@ import { OpenAPIV3 } from 'openapi-types';
 import * as fs from 'fs';
 import debugFactory from 'debug';
 import { OperationIdMissingError } from '../operation-id-missing-error';
+import { cosmiconfig } from 'cosmiconfig';
+import { OpenApiWebSdkGeneratorConfiguration } from '../openapi-web-sdk-generator';
 
+const cosmiconfigExplorer = cosmiconfig('openapi-web-sdk-generator');
 const debug = createDebugger('helpers');
 
 export function createDebugger(...scope: string[]) {
@@ -46,20 +49,10 @@ export function readOpenApiFile(filePath: string): OpenAPIV3.Document {
   return JSON.parse(fileData);
 }
 
-export function loadConfig() {
-  const filePath = path.resolve(process.cwd(), 'openapi-web-sdk-generator.config.js');
-
-  if (!fs.existsSync(filePath)) {
-    return;
-  }
-
-  debug(`Configuration file found. Loading ${filePath}`);
-
-  try {
-    return require(filePath);
-  } catch (e) {
-    throw new Error(`Failed to load configuration file ${filePath}.\n${e.message}`);
-  }
+export async function loadConfig(): Promise<OpenApiWebSdkGeneratorConfiguration> {
+  const result = await cosmiconfigExplorer.search();
+  debug(`Configuration file ${result?.filepath} loaded`);
+  return (result?.config as OpenApiWebSdkGeneratorConfiguration) ?? {};
 }
 
 export function forEachHttpOperation(
