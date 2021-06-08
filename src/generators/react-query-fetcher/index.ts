@@ -39,7 +39,7 @@ export default class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetc
     ensureOperationId(args);
 
     const operationDirPath = getOperationDirectory(args.pathItem, args.operation);
-    const operationFilePath = getOperationFilePath(operationDirPath, args.operation);
+    const operationFilePath = `use-${getOperationFilePath(operationDirPath, args.operation)}`;
     const operationIndexImportPath = path.relative(
       this.#outputDir.resolveDir('index.ts'),
       this.#outputDir.resolve(operationFilePath)
@@ -59,8 +59,8 @@ export default class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetc
           importPath: this.packageName,
         });
 
-    this.#outputDir.writeFileSync(`use-${operationFilePath}.ts`, sourceCode);
-    this.#outputDir.formatSync(`use-${operationFilePath}.ts`);
+    this.#outputDir.writeFileSync(`${operationFilePath}.ts`, sourceCode);
+    this.#outputDir.formatSync(`${operationFilePath}.ts`);
 
     this.#outputDir.appendFileSync(
       'index.ts',
