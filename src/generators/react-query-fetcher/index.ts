@@ -48,12 +48,12 @@ export default class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetc
     this.#outputDir.createDirSync(operationDirPath);
 
     const sourceCode = isQuery(args.operationMethod)
-      ? templateDir.render('query-operation.ts.ejs', {
+      ? templateDir.render('query-operation.ts.mustache', {
           functionName: camelCase(args.operation.operationId),
           pascalFunctionName: pascalCase(args.operation.operationId),
           importPath: this.packageName,
         })
-      : templateDir.render('mutation-operation.ts.ejs', {
+      : templateDir.render('mutation-operation.ts.mustache', {
           functionName: camelCase(args.operation.operationId),
           pascalFunctionName: pascalCase(args.operation.operationId),
           importPath: this.packageName,
@@ -64,7 +64,7 @@ export default class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetc
 
     this.#outputDir.appendFileSync(
       'index.ts',
-      templateDir.render('index-export-statement.ts.ejs', {
+      templateDir.render('index-export-statement.ts.mustache', {
         operationImportPath: operationIndexImportPath,
       })
     );

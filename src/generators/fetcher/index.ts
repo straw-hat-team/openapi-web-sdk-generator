@@ -46,7 +46,7 @@ export default class FetcherCodegen extends CodegenBase<FetcherCodegenOptions> {
 
     this.#outputDir.writeFileSync(
       `${operationFilePath}.ts`,
-      templateDir.render('operation.ts.ejs', {
+      templateDir.render('operation.ts.mustache', {
         functionName,
         typePrefix,
         operationMethod: args.operationMethod.toUpperCase(),
@@ -58,7 +58,7 @@ export default class FetcherCodegen extends CodegenBase<FetcherCodegenOptions> {
 
     this.#outputDir.appendFileSync(
       'index.ts',
-      templateDir.render('index-export-statement.ts.ejs', {
+      templateDir.render('index-export-statement.ts.mustache', {
         operationImportPath: operationIndexImportPath,
       })
     );

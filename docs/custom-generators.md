@@ -51,7 +51,7 @@ class MyCodegen extends CodegenBase<MyCodegenOptions> {
     // Render some template
     this.#outputDir.writeFileSync(
       `${operationFilePath}.ts`,
-      templateDir.render('operation.ts.ejs', {
+      templateDir.render('operation.ts.mustache', {
         functionName,
       })
     );

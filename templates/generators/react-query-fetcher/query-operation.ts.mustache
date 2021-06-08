@@ -1,0 +1,26 @@
+import { createQueryKey, useFetcherQuery, UseFetcherQueryArgs } from '@straw-hat/react-query-fetcher';
+import { Fetcher } from '@straw-hat/fetcher';
+import { {{{functionName}}} } from '{{{importPath}}}';
+
+const QUERY_KEY = ['{{{functionName}}}'];
+
+export type Use{{{pascalFunctionName}}} = UseFetcherQueryArgs<
+  any,
+  any,
+  any
+>;
+
+export function use{{{pascalFunctionName}}}QueryKey(params?: unknown) {
+  return createQueryKey(QUERY_KEY, params);
+}
+
+export function use{{{pascalFunctionName}}}(
+  client: Fetcher,
+  args: Omit<Use{{{pascalFunctionName}}}, 'queryKey' | 'endpoint'>
+) {
+  return useFetcherQuery(client, {
+    ...args,
+    queryKey: QUERY_KEY,
+    endpoint: {{{functionName}}},
+  });
+}

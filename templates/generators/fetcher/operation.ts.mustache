@@ -1,0 +1,30 @@
+import { getRequestBody, getResponseBody, Fetcher } from '@straw-hat/fetcher';
+import { createUrlPath, OperationParams } from '@straw-hat/fetcher/dist/openapi';
+
+export type {{{typePrefix}}}PathParams = Record<any, any>;
+
+export type {{{typePrefix}}}QueryParams = Record<any, any>;
+
+export type {{{typePrefix}}}BodyParams = Record<any, any>;
+
+export type {{{typePrefix}}}Params = OperationParams<
+  {{{typePrefix}}}PathParams,
+  {{{typePrefix}}}QueryParams,
+  {{{typePrefix}}}BodyParams
+>;
+
+export function {{{functionName}}}UrlPath(params?: {{{typePrefix}}}Params) {
+  return createUrlPath('{{{operationPath}}}', params);
+}
+
+export async function {{{functionName}}}(client: Fetcher, params?: {{{typePrefix}}}Params): Promise<any> {
+  const url = {{{functionName}}}UrlPath(params);
+
+  const response = await client(url, {
+    method: '{{{operationMethod}}}',
+    body: getRequestBody(params?.body),
+    signal: params?.options?.signal,
+  });
+
+  return getResponseBody(response);
+}
