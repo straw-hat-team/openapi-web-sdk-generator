@@ -18,7 +18,7 @@ Then add the generators.
 generators:
   - path: '@straw-hat/openapi-web-sdk-generator/dist/generators/fetcher'
     config:
-      - outputDir: './operations'
+      outputDir: './operations'
 ```
 
 Run the generator command.
@@ -38,4 +38,5 @@ sht-openapi-web-sdk-generator local \
 
 ## What's next?
 
+- [Available generators](./docs/available-generators.md)
 - [Custom generators](./docs/custom-generators.md)
