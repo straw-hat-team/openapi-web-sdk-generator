@@ -40,6 +40,8 @@ export default class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetc
 
     const operationDirPath = getOperationDirectory(args.pathItem, args.operation);
     const operationFilePath = `use-${getOperationFilePath(operationDirPath, args.operation)}`;
+    const functionName = camelCase(args.operation.operationId);
+    const pascalFunctionName = pascalCase(args.operation.operationId);
     const operationIndexImportPath = path.relative(
       this.#outputDir.resolveDir('index.ts'),
       this.#outputDir.resolve(operationFilePath)
@@ -49,13 +51,13 @@ export default class ReactQueryFetcherCodegen extends CodegenBase<ReactQueryFetc
 
     const sourceCode = isQuery(args.operationMethod)
       ? templateDir.render('query-operation.ts.mustache', {
-          functionName: camelCase(args.operation.operationId),
-          pascalFunctionName: pascalCase(args.operation.operationId),
+          functionName,
+          pascalFunctionName,
           importPath: this.packageName,
         })
       : templateDir.render('mutation-operation.ts.mustache', {
-          functionName: camelCase(args.operation.operationId),
-          pascalFunctionName: pascalCase(args.operation.operationId),
+          functionName,
+          pascalFunctionName,
           importPath: this.packageName,
         });
 
