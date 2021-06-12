@@ -23,6 +23,7 @@ export default class FetcherCodegen extends CodegenBase<FetcherCodegenOptions> {
   #processSchema = (args: { schemaName: string; schemaObject: OpenAPIV3Schema }) => {
     const normalizedSchemaName = pascalCase(args.schemaName);
     this.#outputDir.appendFileSync(`components/schemas.ts`, `type ${normalizedSchemaName} = any;\n`);
+    // this.#outputDir.appendFileSync(`types.ts`, TypeSrcriptEngine.generateTypes(args));
   };
 
   #processOperation = (args: {
